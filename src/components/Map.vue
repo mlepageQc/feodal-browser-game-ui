@@ -24,7 +24,7 @@
     mounted () {
       this.setupMap()
       this.$root.$on('minimap-selection-change', this.onMinimapSelectionChange)
-      this.$root.$on('mouseup', () => this.isDragging = false)
+      this.$root.$on('mouseup', this.onMapDragEnd)
     },
     methods: {
       async setupMap () {
@@ -95,7 +95,7 @@
         marginTop = marginTop.substr(0, marginTop.length - 2)
         return Math.round(parseFloat(marginTop))
       },
-      onMapDragEnd (event) {
+      onMapDragEnd () {
         this.isDragging = false
       },
       translateMap (marginLeft, marginTop) {

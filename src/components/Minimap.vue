@@ -32,7 +32,7 @@
     },
     mounted () {
       this.setupMinimap()
-      this.$root.$on('mouseup', () => this.isDragging = false)
+      this.$root.$on('mouseup', this.onMinimapSelectionEnd)
     },
     methods: {
       async setupMinimap () {
@@ -80,7 +80,7 @@
 
         this.moveSelector(event)
       },
-      onMinimapSelectionEnd (event) {
+      onMinimapSelectionEnd () {
         this.isDragging = false
       },
       moveSelector (event) {
