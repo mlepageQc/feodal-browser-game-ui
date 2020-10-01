@@ -18,7 +18,9 @@
         cropAtY: 0,
         isDragging: false,
         dragStartX: 0,
-        dragStartY: 0
+        dragStartY: 0,
+        prevMoveX: 0,
+        prevMoveY: 0
       }
     },
     mounted () {
@@ -70,13 +72,16 @@
         this.dragStartY = event.clientY - this.marginTop()
       },
       onMapDragMove (event) {
-        if (!this.isDragging) return false
+        if (!this.isDragging || this.will) return false
 
-        let marginLeft = -Math.abs(this.dragStartX - event.clientX)
-        let marginTop = -Math.abs(this.dragStartY - event.clientY)
+        this.prevMoveX = event.clientX
+        this.prevMoveY = event.clientY
 
-        if (marginLeft > 0) marginLeft = 0
-        if (marginTop > 0) marginTop = 0
+        let marginLeft = -Math.abs(this.dragStartX - this.prevMoveX)
+        let marginTop = -Math.abs(this.dragStartY - this.prevMoveY)
+
+        if (marginLeft >= 0) marginLeft = 0
+        if (marginTop >= 0) marginTop = 0
 
         this.translateMap(marginLeft, marginTop)
 
