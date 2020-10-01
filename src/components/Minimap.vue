@@ -61,8 +61,8 @@
         this.setupMinimapSelector()
       },
       setupMinimapSelector () {
-        const selectorWidth = this.mapWrapperWidth / MAP_SIZE * MINIMAP_SIZE
-        const selectorHeight = this.mapWrapperHeight / MAP_SIZE * MINIMAP_SIZE
+        const selectorWidth = Math.round(this.mapWrapperWidth / MAP_SIZE * MINIMAP_SIZE)
+        const selectorHeight = Math.round(this.mapWrapperHeight / MAP_SIZE * MINIMAP_SIZE)
 
         this.$refs.minimapSelector.style.height = `${selectorHeight}px`
         this.$refs.minimapSelector.style.width = `${selectorWidth}px`
@@ -73,7 +73,9 @@
         this.selectorMounted = true
       },
       onMapDrag ({ mapMarginLeft, mapMarginTop }) {
-
+        const newX = -mapMarginLeft / MAP_SIZE * MINIMAP_SIZE
+        const newY = -mapMarginTop / MAP_SIZE * MINIMAP_SIZE
+        this.translateMinimapSelector(newX, newY)
       },
       onMinimapSelectionStart (event) {
         this.isDragging = true
@@ -96,7 +98,6 @@
         } else if (!this.willSelectorOverflowLeft(event)) {
           newX =  this.movedSelectorCenterX(event)
         }
-        selector.style.left = `${newX}px`
         // Set Y
         let newY = 0
         if (this.willSelectorOverflowBottom(event)) {
@@ -104,12 +105,17 @@
         } else if (!this.willSelectorOverflowTop(event)) {
           newY = this.movedSelectorCenterY(event)
         }
-        selector.style.top = `${newY}px`
+
+        this.translateMinimapSelector(newX, newY)
 
         this.$root.$emit('minimap-selection-change', {
           newSelectorX: newX,
           newSelectorY: newY
         })
+      },
+      translateMinimapSelector (newX, newY) {
+        this.$refs.minimapSelector.style.left = `${newX}px`
+        this.$refs.minimapSelector.style.top = `${newY}px`
       },
       selectorAttribute (attribute) {
         let styleAttribute = getComputedStyle(this.$refs.minimapSelector)[attribute]
