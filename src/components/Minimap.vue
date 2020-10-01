@@ -33,6 +33,7 @@
     mounted () {
       this.setupMinimap()
       this.$root.$on('mouseup', this.onMinimapSelectionEnd)
+      this.$root.$on('map-drag', this.onMapDrag)
     },
     methods: {
       async setupMinimap () {
@@ -71,6 +72,9 @@
         this.$el.addEventListener('mouseup', this.onMinimapSelectionEnd)
         this.selectorMounted = true
       },
+      onMapDrag ({ mapMarginLeft, mapMarginTop }) {
+
+      },
       onMinimapSelectionStart (event) {
         this.isDragging = true
         this.moveSelector(event)
@@ -88,7 +92,7 @@
         // Set X
         let newX = 0
         if (this.willSelectorOverflowRight(event)) {
-          newX = MINIMAP_SIZE - this.selectorWidth()
+          newX = MINIMAP_SIZE - this.selectorAttribute('width') - this.selectorAttribute('borderWidth') * 2
         } else if (!this.willSelectorOverflowLeft(event)) {
           newX =  this.movedSelectorCenterX(event)
         }
@@ -96,7 +100,7 @@
         // Set Y
         let newY = 0
         if (this.willSelectorOverflowBottom(event)) {
-          newY = MINIMAP_SIZE - this.selectorHeight()
+          newY = MINIMAP_SIZE - this.selectorAttribute('height') - this.selectorAttribute('borderWidth') * 2
         } else if (!this.willSelectorOverflowTop(event)) {
           newY = this.movedSelectorCenterY(event)
         }
@@ -107,53 +111,33 @@
           newSelectorY: newY
         })
       },
-      selectorLeft () {
-        let left = getComputedStyle(this.$refs.minimapSelector).left
-        left = left.substr(0, left.length - 2)
-        return Math.round(parseFloat(left))
+      selectorAttribute (attribute) {
+        let styleAttribute = getComputedStyle(this.$refs.minimapSelector)[attribute]
+        styleAttribute = styleAttribute.substr(0, styleAttribute.length - 2)
+        return Math.round(parseFloat(styleAttribute))
       },
-      selectorTop () {
-        let top = getComputedStyle(this.$refs.minimapSelector).top
-        top = top.substr(0, top.length - 2)
-        return Math.round(parseFloat(top))
-      },
-      selectorWidth () {
-        let width = getComputedStyle(this.$refs.minimapSelector).width
-        width = width.substr(0, width.length - 2)
-        return Math.round(parseFloat(width))
-      },
-      selectorHeight () {
-        let height = getComputedStyle(this.$refs.minimapSelector).height
-        height = height.substr(0, height.length - 2)
-        return Math.round(parseFloat(height))
-      },
-      selectorBorderWidth () {
-        let border = getComputedStyle(this.$refs.minimapSelector).borderWidth
-        border = border.substr(0, border.length - 2)
-        return Math.round(parseFloat(border))
-      },
-      minimapBorderWidth () {
+      minimapAttribute (attribute) {
         let border = getComputedStyle(this.$el).borderWidth
         border = border.substr(0, border.length - 2)
         return Math.round(parseFloat(border))
       },
       willSelectorOverflowLeft (event) {
-        return (event.offsetX - this.selectorWidth() / 2) <= 0
+        return (event.offsetX - this.selectorAttribute('width') / 2) <= 0
       },
       willSelectorOverflowRight (event) {
-        return (event.offsetX + this.selectorWidth() / 2) >= MINIMAP_SIZE
+        return (event.offsetX + this.selectorAttribute('width') / 2) + this.selectorAttribute('borderWidth') >= MINIMAP_SIZE
       },
       willSelectorOverflowTop (event) {
-        return (event.offsetY - this.selectorHeight() / 2) <= 0
+        return (event.offsetY - this.selectorAttribute('height') / 2) <= 0
       },
       willSelectorOverflowBottom (event) {
-        return (event.offsetY + this.selectorHeight() / 2) > MINIMAP_SIZE
+        return (event.offsetY + this.selectorAttribute('height') / 2) + this.selectorAttribute('borderWidth') >= MINIMAP_SIZE
       },
       movedSelectorCenterX (event) {
-        return (event.offsetX - this.selectorWidth() / 2) - this.selectorBorderWidth()
+        return (event.offsetX - this.selectorAttribute('width') / 2) - this.selectorAttribute('borderWidth')
       },
       movedSelectorCenterY (event) {
-        return (event.offsetY - this.selectorHeight() / 2) - this.selectorBorderWidth()
+        return (event.offsetY - this.selectorAttribute('height') / 2) - this.selectorAttribute('borderWidth')
       }
     }
   }
