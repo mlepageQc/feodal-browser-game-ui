@@ -25,8 +25,8 @@
     },
     mounted () {
       this.setupMap()
-      this.$root.$on('minimap-selection-change', this.onMinimapSelectionChange)
-      this.$root.$on('mouseup', this.onMapDragEnd)
+      this.$root.$on('minimap:selection-change', this.onMinimapSelectionChange)
+      this.$root.$on('app:mouseup', this.onMapDragEnd)
     },
     methods: {
       async setupMap () {
@@ -38,7 +38,6 @@
       onMinimapSelectionChange ({ newSelectorX, newSelectorY }) {
         const marginLeft = -(newSelectorX / MINIMAP_SIZE * MAP_SIZE)
         const marginTop = -(newSelectorY / MINIMAP_SIZE * MAP_SIZE)
-
         this.translateMap(marginLeft, marginTop)
       },
       fetchMapBase64Image () {
@@ -68,37 +67,32 @@
       },
       onMapDragStart (event) {
         this.isDragging = true
-        this.dragStartX = event.clientX - this.marginLeft()
-        this.dragStartY = event.clientY - this.marginTop()
+        this.dragStartX = event.clientX - this.mapAttribute('marginLeft')
+        this.dragStartY = event.clientY - this.mapAttribute('marginTop')
       },
       onMapDragMove (event) {
-        if (!this.isDragging || this.will) return false
+        if (!this.isDragging) return false
 
-        this.prevMoveX = event.clientX
-        this.prevMoveY = event.clientY
+        this.dragMap(event)
+      },
+      dragMap (event) {
+        let marginLeft = -Math.abs(this.dragStartX - event.clientX)
+        let marginTop = -Math.abs(this.dragStartY - event.clientY)
 
-        let marginLeft = -Math.abs(this.dragStartX - this.prevMoveX)
-        let marginTop = -Math.abs(this.dragStartY - this.prevMoveY)
-
-        if (marginLeft >= 0) marginLeft = 0
-        if (marginTop >= 0) marginTop = 0
+        if (marginLeft > 0) marginLeft = 0
+        if (marginTop > 0) marginTop = 0
 
         this.translateMap(marginLeft, marginTop)
 
-        this.$root.$emit('map-drag', {
+        this.$root.$emit('map:drag', {
           mapMarginLeft: marginLeft,
           mapMarginTop: marginTop,
         })
       },
-      marginLeft () {
-        let marginLeft = getComputedStyle(this.$refs.mapCanvas).marginLeft
-        marginLeft = marginLeft.substr(0, marginLeft.length - 2)
-        return Math.round(parseFloat(marginLeft))
-      },
-      marginTop () {
-        let marginTop = getComputedStyle(this.$refs.mapCanvas).marginTop
-        marginTop = marginTop.substr(0, marginTop.length - 2)
-        return Math.round(parseFloat(marginTop))
+      mapAttribute (attribute) {
+        let styleAttribute = getComputedStyle(this.$refs.mapCanvas)[attribute]
+        styleAttribute = styleAttribute.substr(0, styleAttribute.length - 2)
+        return Math.round(parseFloat(styleAttribute))
       },
       onMapDragEnd () {
         this.isDragging = false

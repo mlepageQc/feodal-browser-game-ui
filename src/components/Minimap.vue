@@ -32,8 +32,8 @@
     },
     mounted () {
       this.setupMinimap()
-      this.$root.$on('mouseup', this.onMinimapSelectionEnd)
-      this.$root.$on('map-drag', this.onMapDrag)
+      this.$root.$on('app:mouseup', this.onMinimapSelectionEnd)
+      this.$root.$on('map:drag', this.onMapDrag)
     },
     methods: {
       async setupMinimap () {
@@ -108,7 +108,7 @@
 
         this.translateMinimapSelector(newX, newY)
 
-        this.$root.$emit('minimap-selection-change', {
+        this.$root.$emit('minimap:selection-change', {
           newSelectorX: newX,
           newSelectorY: newY
         })
