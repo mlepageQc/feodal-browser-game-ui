@@ -122,14 +122,14 @@
         this.$refs.minimapSelector.style.top = `${newY}px`
       },
       selectorAttribute (attribute) {
-        let styleAttribute = getComputedStyle(this.$refs.minimapSelector)[attribute]
-        styleAttribute = styleAttribute.substr(0, styleAttribute.length - 2)
-        return Math.round(parseFloat(styleAttribute))
+        let value = getComputedStyle(this.$refs.minimapSelector)[attribute]
+        value = value.substr(0, value.length - 2)
+        return Math.round(parseFloat(value))
       },
       minimapAttribute (attribute) {
-        let border = getComputedStyle(this.$el)[attribute]
-        border = border.substr(0, border.length - 2)
-        return Math.round(parseFloat(border))
+        let value = getComputedStyle(this.$el)[attribute]
+        value = value.substr(0, value.length - 2)
+        return Math.round(parseFloat(value))
       },
       willSelectorOverflowLeft (event) {
         return (event.layerX - this.selectorAttribute('width') / 2) <= 0
