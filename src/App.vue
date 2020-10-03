@@ -1,7 +1,7 @@
 <template>
   <div
     class="app"
-    @mouseup="$root.$emit('mouseup')">
+    @mouseup="$root.$emit('app:mouseup')">
     <header class="app__header">
       This is a game
     </header>
