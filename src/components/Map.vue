@@ -117,9 +117,9 @@
         })
       },
       mapAttribute (attribute) {
-        let styleAttribute = getComputedStyle(this.$refs.mapCanvas)[attribute]
-        styleAttribute = styleAttribute.substr(0, styleAttribute.length - 2)
-        return Math.round(parseFloat(styleAttribute))
+        let value = getComputedStyle(this.$refs.mapCanvas)[attribute]
+        value = value.substr(0, value.length - 2)
+        return Math.round(parseFloat(value))
       },
       onMapDragEnd () {
         this.isDragging = false
