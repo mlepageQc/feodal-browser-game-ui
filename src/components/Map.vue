@@ -46,9 +46,12 @@
         } catch (e) {}
       },
       onMinimapSelectionChange ({ newSelectorX, newSelectorY }) {
-        debugger
-        const marginLeft = -(newSelectorX / MINIMAP_SIZE * MAP_SIZE)
-        const marginTop = -(newSelectorY / MINIMAP_SIZE * MAP_SIZE)
+        let marginLeft = -(newSelectorX / MINIMAP_SIZE * MAP_SIZE)
+        let marginTop = -(newSelectorY / MINIMAP_SIZE * MAP_SIZE)
+
+        if (marginLeft > 0) marginLeft = 0
+        if (marginTop > 0) marginTop = 0
+
         this.translateMap(marginLeft, marginTop)
       },
       fetchMapBase64Image () {
