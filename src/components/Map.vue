@@ -10,6 +10,16 @@
 
   export default {
     name: 'map-component',
+    props: {
+      mapWrapperWidth: {
+        type: Number,
+        required: true
+      },
+      mapWrapperHeight: {
+        type: Number,
+        required: true
+      }
+    },
     data () {
       return {
         mapImage: null,
@@ -36,6 +46,7 @@
         } catch (e) {}
       },
       onMinimapSelectionChange ({ newSelectorX, newSelectorY }) {
+        debugger
         const marginLeft = -(newSelectorX / MINIMAP_SIZE * MAP_SIZE)
         const marginTop = -(newSelectorY / MINIMAP_SIZE * MAP_SIZE)
         this.translateMap(marginLeft, marginTop)
@@ -76,11 +87,25 @@
         this.dragMap(event)
       },
       dragMap (event) {
-        let marginLeft = -Math.abs(this.dragStartX - event.clientX)
-        let marginTop = -Math.abs(this.dragStartY - event.clientY)
+        let marginLeft = event.clientX - this.dragStartX
+        let marginTop = event.clientY - this.dragStartY
 
-        if (marginLeft > 0) marginLeft = 0
-        if (marginTop > 0) marginTop = 0
+        // Overflow left
+        if (marginLeft > 0) {
+          this.dragStartX = event.clientX - this.mapAttribute('marginLeft')
+          marginLeft = 0
+        // Overflow right
+        } else if (marginLeft < (this.mapWrapperWidth - this.mapAttribute('width'))) {
+          marginLeft = this.mapWrapperWidth - this.mapAttribute('width')
+        }
+        // Overflow top
+        if (marginTop > 0) {
+          this.dragStartY = event.clientY - this.mapAttribute('marginTop')
+          marginTop = 0
+        // Overflow bottom
+        } else if (marginTop < (this.mapWrapperHeight - this.mapAttribute('height'))) {
+          marginTop = this.mapWrapperHeight - this.mapAttribute('height')
+        }
 
         this.translateMap(marginLeft, marginTop)
 
@@ -107,11 +132,7 @@
 
 <style lang="scss">
   .map {
-    display: inline-block;
-    overflow: scroll;
     position: relative;
-    height: 100%;
-    width: 100%;
     &:hover {
       cursor: pointer;
     }
