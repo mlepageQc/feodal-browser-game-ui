@@ -93,20 +93,19 @@
         let marginLeft = event.clientX - this.dragStartX
         let marginTop = event.clientY - this.dragStartY
 
-        // Overflow left
         if (marginLeft > 0) {
-          this.dragStartX = event.clientX - this.mapAttribute('marginLeft')
+        // Overflow left
           marginLeft = 0
-        // Overflow right
         } else if (marginLeft < (this.mapWrapperWidth - this.mapAttribute('width'))) {
+        // Overflow right
           marginLeft = this.mapWrapperWidth - this.mapAttribute('width')
         }
-        // Overflow top
+
         if (marginTop > 0) {
-          this.dragStartY = event.clientY - this.mapAttribute('marginTop')
+        // Overflow top
           marginTop = 0
-        // Overflow bottom
         } else if (marginTop < (this.mapWrapperHeight - this.mapAttribute('height'))) {
+        // Overflow bottom
           marginTop = this.mapWrapperHeight - this.mapAttribute('height')
         }
 
