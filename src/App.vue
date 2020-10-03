@@ -7,14 +7,16 @@
     </header>
     <main>
       <div class="app__map-wrapper" ref="mapWrapper">
-        <map-component @mounted="onMapMounted" />
+        <map-component
+          :mapWrapperWidth="mapWrapperWidth"
+          :mapWrapperHeight="mapWrapperHeight"
+          @mounted="onMapMounted" />
+      </div>
         <minimap
           v-if="mapMounted"
           class="app__minimap"
           :mapWrapperWidth="mapWrapperWidth"
           :mapWrapperHeight="mapWrapperHeight" />
-      </div>
-      <div class="app__map-actions" />
     </main>
   </div>
 </template>
@@ -38,9 +40,14 @@
     },
     methods: {
       onMapMounted () {
-        this.mapWrapperWidth = this.$refs.mapWrapper.offsetWidth
-        this.mapWrapperHeight = this.$refs.mapWrapper.offsetHeight
+        this.mapWrapperWidth = this.mapWrapperAttribute('width')
+        this.mapWrapperHeight = this.mapWrapperAttribute('height')
         this.mapMounted = true
+      },
+      mapWrapperAttribute (attribute) {
+        let value = getComputedStyle(this.$refs.mapWrapper)[attribute]
+        value = value.substr(0, value.length - 2)
+        return Math.round(parseFloat(value))
       }
     }
   }
@@ -64,15 +71,15 @@
     main {
       display: flex;
       height: calc(100vh - 60px);
+      position: relative;
     }
     &__map-actions {
       flex: 1;
+      flex-grow: 1;
       min-width: 250px;
       border-left: 1px solid black;
     }
     &__map-wrapper {
-      flex-grow: 6;
-      max-width: 80%;
       overflow: hidden;
       position: relative;
     }

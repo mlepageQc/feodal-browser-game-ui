@@ -79,10 +79,13 @@
       },
       onMinimapSelectionStart (event) {
         this.isDragging = true
+        console.log('dragginG')
+        console.log(event)
         this.moveSelector(event)
       },
       onMinimapSelectionMove (event) {
         if (!this.isDragging) return true
+        console.log('moving')
 
         this.moveSelector(event)
       },
@@ -94,14 +97,15 @@
         // Set X
         let newX = 0
         if (this.willSelectorOverflowRight(event)) {
-          newX = MINIMAP_SIZE - this.selectorAttribute('width') - this.selectorAttribute('borderWidth') * 2
+          newX = MINIMAP_SIZE - this.selectorAttribute('width')
+          // TODO Emit of 'minimap:overflow-bottom'
         } else if (!this.willSelectorOverflowLeft(event)) {
           newX =  this.movedSelectorCenterX(event)
         }
         // Set Y
         let newY = 0
         if (this.willSelectorOverflowBottom(event)) {
-          newY = MINIMAP_SIZE - this.selectorAttribute('height') - this.selectorAttribute('borderWidth') * 2
+          newY = MINIMAP_SIZE - this.selectorAttribute('height')
         } else if (!this.willSelectorOverflowTop(event)) {
           newY = this.movedSelectorCenterY(event)
         }
@@ -123,27 +127,27 @@
         return Math.round(parseFloat(styleAttribute))
       },
       minimapAttribute (attribute) {
-        let border = getComputedStyle(this.$el).borderWidth
+        let border = getComputedStyle(this.$el)[attribute]
         border = border.substr(0, border.length - 2)
         return Math.round(parseFloat(border))
       },
       willSelectorOverflowLeft (event) {
-        return (event.offsetX - this.selectorAttribute('width') / 2) <= 0
+        return (event.layerX - this.selectorAttribute('width') / 2) <= 0
       },
       willSelectorOverflowRight (event) {
-        return (event.offsetX + this.selectorAttribute('width') / 2) + this.selectorAttribute('borderWidth') >= MINIMAP_SIZE
+        return (event.layerX + this.selectorAttribute('width') / 2) >= MINIMAP_SIZE
       },
       willSelectorOverflowTop (event) {
-        return (event.offsetY - this.selectorAttribute('height') / 2) <= 0
+        return (event.layerY - this.selectorAttribute('height') / 2) <= 0
       },
       willSelectorOverflowBottom (event) {
-        return (event.offsetY + this.selectorAttribute('height') / 2) + this.selectorAttribute('borderWidth') >= MINIMAP_SIZE
+        return (event.layerY + this.selectorAttribute('height') / 2) >= MINIMAP_SIZE
       },
       movedSelectorCenterX (event) {
-        return (event.offsetX - this.selectorAttribute('width') / 2) - this.selectorAttribute('borderWidth')
+        return (event.layerX - this.selectorAttribute('width') / 2) - this.selectorAttribute('borderLeftWidth') * 2
       },
       movedSelectorCenterY (event) {
-        return (event.offsetY - this.selectorAttribute('height') / 2) - this.selectorAttribute('borderWidth')
+        return (event.layerY - this.selectorAttribute('height') / 2) - this.selectorAttribute('borderTopWidth') * 2
       }
     }
   }
@@ -152,12 +156,11 @@
 <style lang="scss">
   .minimap {
     &__selector {
+      box-sizing: border-box;
       position: absolute;
       border: 2px solid black;
       background: transparent;
       pointer-events: none;
-      top: 0;
-      left: 0;
     }
   }
 </style>
