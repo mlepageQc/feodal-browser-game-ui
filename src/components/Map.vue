@@ -101,6 +101,9 @@
       dragMap (event) {
         let marginLeft = event.clientX - this.dragStartX
         let marginTop = event.clientY - this.dragStartY
+        // Overflow flags for right and bottom edge cases
+        let overflowRight = false
+        let overflowBottom = false
 
         if (marginLeft > 0) {
         // Overflow left
@@ -108,6 +111,7 @@
         } else if (marginLeft < (this.mapWrapperWidth - this.mapAttribute('width'))) {
         // Overflow right
           marginLeft = this.mapWrapperWidth - this.mapAttribute('width')
+          overflowRight = true
         }
 
         if (marginTop > 0) {
@@ -116,11 +120,14 @@
         } else if (marginTop < (this.mapWrapperHeight - this.mapAttribute('height'))) {
         // Overflow bottom
           marginTop = this.mapWrapperHeight - this.mapAttribute('height')
+          overflowBottom = true
         }
 
         this.translateMap(marginLeft, marginTop)
 
         this.$root.$emit('map:drag', {
+          overflowRight,
+          overflowBottom,
           mapMarginLeft: marginLeft,
           mapMarginTop: marginTop,
         })
