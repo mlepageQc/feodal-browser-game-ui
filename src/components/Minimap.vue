@@ -73,9 +73,13 @@
         this.$el.addEventListener('mouseup', this.onMinimapSelectionEnd)
         this.selectorMounted = true
       },
-      onMapDrag ({ mapMarginLeft, mapMarginTop }) {
-        const newX = -mapMarginLeft / MAP_SIZE * MINIMAP_SIZE
-        const newY = -mapMarginTop / MAP_SIZE * MINIMAP_SIZE
+      onMapDrag ({ overflowRight, overflowBottom, mapMarginLeft, mapMarginTop }) {
+        let newX = -mapMarginLeft / MAP_SIZE * MINIMAP_SIZE
+        let newY = -mapMarginTop / MAP_SIZE * MINIMAP_SIZE
+
+        if (overflowRight) newX = MINIMAP_SIZE - this.selectorAttribute('width')
+        if (overflowBottom) newY = MINIMAP_SIZE - this.selectorAttribute('height')
+
         this.translateMinimapSelector(newX, newY)
       },
       onMinimapSelectionStart (event) {
@@ -92,9 +96,7 @@
       },
       moveSelector (event) {
         const selector = this.$refs.minimapSelector
-        // Flags used for overflow right and bottom
-        // Pixel values are not precise enough for map definition
-        // These flags will indicate to the map that edges are reached
+        // Overflow flags for right and bottom edge cases
         let overflowRight = false
         let overflowBottom = false
         // Set X
