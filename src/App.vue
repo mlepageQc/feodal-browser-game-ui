@@ -40,9 +40,21 @@
     },
     methods: {
       onMapMounted () {
+        this.setMapWrapperDimensions()
+        window.onresize = this.onWindowResize
+        this.mapMounted = true
+      },
+      setMapWrapperDimensions () {
         this.mapWrapperWidth = this.mapWrapperAttribute('width')
         this.mapWrapperHeight = this.mapWrapperAttribute('height')
-        this.mapMounted = true
+      },
+      onWindowResize () {
+        this.onMapResize()
+        // Do other stuff
+      },
+      onMapResize () {
+        this.setMapWrapperDimensions()
+        this.$root.$emit('map:resize')
       },
       mapWrapperAttribute (attribute) {
         let value = getComputedStyle(this.$refs.mapWrapper)[attribute]

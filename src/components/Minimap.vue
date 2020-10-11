@@ -34,6 +34,7 @@
       this.setupMinimap()
       this.$root.$on('app:mouseup', this.onMinimapSelectionEnd)
       this.$root.$on('map:drag', this.onMapDrag)
+      this.$root.$on('map:resize', this.setupMinimapSelector)
     },
     methods: {
       async setupMinimap () {
