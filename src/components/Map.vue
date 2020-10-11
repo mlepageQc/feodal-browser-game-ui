@@ -45,12 +45,21 @@
           this.setMapCanvasImage(response.data)
         } catch (e) {}
       },
-      onMinimapSelectionChange ({ newSelectorX, newSelectorY }) {
+      onMinimapSelectionChange ({ overflowRight, overflowBottom, newSelectorX, newSelectorY }) {
         let marginLeft = -(newSelectorX / MINIMAP_SIZE * MAP_SIZE)
         let marginTop = -(newSelectorY / MINIMAP_SIZE * MAP_SIZE)
 
-        if (marginLeft > 0) marginLeft = 0
-        if (marginTop > 0) marginTop = 0
+        if (overflowRight) {
+          marginLeft = this.mapWrapperWidth - this.mapAttribute('width')
+        } else if (marginLeft > 0) {
+          marginLeft = 0
+        }
+
+        if (overflowBottom) {
+          marginTop = this.mapWrapperHeight - this.mapAttribute('height')
+        } else if (marginTop > 0) {
+          marginTop = 0
+        }
 
         this.translateMap(marginLeft, marginTop)
       },
