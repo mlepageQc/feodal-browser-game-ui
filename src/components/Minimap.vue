@@ -79,13 +79,10 @@
       },
       onMinimapSelectionStart (event) {
         this.isDragging = true
-        console.log('dragginG')
-        console.log(event)
         this.moveSelector(event)
       },
       onMinimapSelectionMove (event) {
         if (!this.isDragging) return true
-        console.log('moving')
 
         this.moveSelector(event)
       },
@@ -94,11 +91,16 @@
       },
       moveSelector (event) {
         const selector = this.$refs.minimapSelector
+        // Flags used for overflow right and bottom
+        // Pixel values are not precise enough for map definition
+        // These flags will indicate to the map that edges are reached
+        let overflowRight = false
+        let overflowBottom = false
         // Set X
         let newX = 0
         if (this.willSelectorOverflowRight(event)) {
           newX = MINIMAP_SIZE - this.selectorAttribute('width')
-          // TODO Emit of 'minimap:overflow-bottom'
+          overflowRight = true
         } else if (!this.willSelectorOverflowLeft(event)) {
           newX =  this.movedSelectorCenterX(event)
         }
@@ -106,6 +108,7 @@
         let newY = 0
         if (this.willSelectorOverflowBottom(event)) {
           newY = MINIMAP_SIZE - this.selectorAttribute('height')
+          overflowBottom = true
         } else if (!this.willSelectorOverflowTop(event)) {
           newY = this.movedSelectorCenterY(event)
         }
@@ -113,6 +116,8 @@
         this.translateMinimapSelector(newX, newY)
 
         this.$root.$emit('minimap:selection-change', {
+          overflowRight,
+          overflowBottom,
           newSelectorX: newX,
           newSelectorY: newY
         })
