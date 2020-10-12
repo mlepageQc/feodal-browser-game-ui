@@ -1,7 +1,7 @@
 <template>
   <div
     class="app"
-    @mouseup="$root.$emit('app:mouseup')">
+    @mouseup="$root.$emit('app:mouseup', $event)">
     <header class="app__header">
       This is a game
     </header>
@@ -79,6 +79,9 @@
       border-bottom: 1px solid black;
       display: flex;
       align-items: center;
+      font-family: 'Comic Sans MS';
+      font-size: 20px;
+      box-sizing: border-box;
     }
     main {
       display: flex;
