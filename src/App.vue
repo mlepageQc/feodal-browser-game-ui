@@ -1,26 +1,41 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <Header />
+  <main class="main">
+    <Nav class="main--nav" />
+    <Content class="main--content" />
+  </main>
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts">
+import { Options, Vue } from 'vue-class-component'
+import Header from './components/layout/Header.vue'
+import Nav from './components/layout/Nav.vue'
+import Content from './components/layout/Content.vue'
 
-export default {
-  name: 'App',
+@Options({
   components: {
-    HelloWorld
+    Header,
+    Nav,
+    Content
   }
-}
+})
+export default class App extends Vue {}
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+  #app {
+    display: flex;
+    flex-direction: column;
+  }
+  main {
+    display: flex;
+    flex-grow: 1;
+    &--nav {
+      height: 100%;
+    }
+    &--content {
+      height: 100%;
+      flex-grow: 1;
+    }
+  }
 </style>
