@@ -20,6 +20,7 @@ export default defineComponent({})
 		border-right: 1px solid black;
     padding: 24px 0;
     align-items: center;
+		box-sizing: border-box;
 
     svg {
       width: 32px;

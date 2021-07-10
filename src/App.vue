@@ -1,9 +1,11 @@
 <template>
   <Header />
-  <main class="main">
-    <MainNav class="main--nav" />
-    <router-view />
-  </main>
+  <div id="bottom">
+    <MainNav />
+    <main>
+      <router-view />
+    </main>
+  </div>
 </template>
 
 <script lang="ts">
@@ -22,6 +24,7 @@ export default defineComponent({
   body {
     margin: 0;
     height: 100vh;
+    min-width: 1024px;
     font-family: $base-font;
   }
   #app {
@@ -29,15 +32,11 @@ export default defineComponent({
     flex-direction: column;
     height: 100%;
   }
-  main {
+  #bottom {
     display: flex;
     flex-grow: 1;
-    &--nav {
-      height: 100%;
-    }
-    &--content {
-      height: 100%;
-      flex-grow: 1;
-    }
+  }
+  main {
+    display: flex;
   }
 </style>

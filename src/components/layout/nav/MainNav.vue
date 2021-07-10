@@ -1,6 +1,6 @@
 <template>
   <Nav>
-    <NavItem :to="{ name: 'map' }" />
+    <NavItem :to="{ name: 'map' }" tooltip="Some tooltip" />
   </Nav>
 </template>
 

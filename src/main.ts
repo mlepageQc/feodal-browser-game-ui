@@ -5,6 +5,7 @@ import VueTippy, { TippyComponent } from 'vue-tippy'
 import VueI18n from 'vue-i18n'
 
 createApp({
+	router,
 	render: () => h(App) 
 }).use(router)
 	.use(VueTippy)

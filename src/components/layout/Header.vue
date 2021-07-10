@@ -1,7 +1,7 @@
 <template>
-  <div class="header">
+  <header>
     Bannière ici
-  </div>
+  </header>
 </template>
 
 <script lang="ts">
@@ -11,7 +11,7 @@ export default defineComponent({})
 </script>
 
 <style lang="scss">
-  .header {
+  header {
     background: teal;
     height: 50px;
     display: flex;

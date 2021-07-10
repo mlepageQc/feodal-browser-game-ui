@@ -1,10 +1,10 @@
 <template>
-	<router-view 
+	<router-link
 		tag="li" 
 		class="nav-item"
 		:to="to">
 		<slot />
-	</router-view>
+	</router-link>
 </template>
 
 <script lang="ts">

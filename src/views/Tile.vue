@@ -1,7 +1,7 @@
 <template>
-  <div class="info">
-    <div class="info--nav">
-      Accès sur différentes informations de la tuile (icones), ce menu n'est qu'une idée
+  <div class="tile">
+    <div class="tile--nav">
+      {{ x }}, {{ y }}
     </div>
   </div>
 </template>
@@ -11,17 +11,23 @@ import { defineComponent } from 'vue'
 
 export default defineComponent({
 	props: {
-		coordinates: {
-			type: Object as () => { x: number; y: number }
+		x: {
+			type: String as () => string,
+			required: true
+		},
+		y: {
+			type: String as () => string,
+			required: true
 		}
 	}
 })
 </script>
 
 <style lang="scss">
-  .info {
+  .tile {
     border-left: 1px solid black;
     background: #EBEBEB;
+    min-width: 336px;
     &--nav {
       display: flex;
       align-items: center;

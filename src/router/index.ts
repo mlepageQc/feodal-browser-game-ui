@@ -1,12 +1,12 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import Map from '../components/views/Map.vue'
-import Tile from '../components/views/Tile.vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Map from '../views/Map.vue'
+import Tile from '../views/Tile.vue'
 
 const router = createRouter({
-	history: createWebHistory(),
+	history: createWebHashHistory(),
 	routes: [
 		{
-			path: '/', 
+			path: '/',
 			name: 'root',
 			redirect: { name: 'map' }
 		},
@@ -21,7 +21,10 @@ const router = createRouter({
 					component: Tile,
 					props: (to) => {
 						const coordinates = (to.params.coordinates as string).split(':')
-						return { x: coordinates[0], y: coordinates[1] }
+						return { 
+							x: coordinates[0], 
+							y: coordinates[1]
+						}
 					}
 				}
 			]
