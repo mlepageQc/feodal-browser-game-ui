@@ -1,15 +1,14 @@
-import { createApp } from 'vue'
+import { createApp, h } from 'vue'
 import App from './App.vue'
+import router from './router'
 import VueRouter from 'vue-router'
-import { h } from '@vue/runtime-core'
+import VueTippy, { TippyComponent } from 'vue-tippy'
+import VueI18n from 'vue-i18n'
 
-const router = new VueRouter({
-	routes: [
-		{ path: '/', name: 'root', component: App }
-	]
-})
-
-createApp({ 
-	router,
+createApp({
+	$router: router,
 	render: () => h(App) 
-}).mount('#app')
+}).use(VueRouter)
+	.use(VueTippy)
+	.component('tippy', TippyComponent)
+	.mount('#app')

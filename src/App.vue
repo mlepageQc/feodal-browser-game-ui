@@ -1,25 +1,19 @@
 <template>
   <Header />
   <main class="main">
-    <Nav class="main--nav" />
-    <Content class="main--content" />
+    <MainNav class="main--nav" />
+    <router-view />
   </main>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from 'vue-class-component'
+import { defineComponent  } from 'vue'
 import Header from './components/layout/Header.vue'
-import Nav from './components/layout/Nav.vue'
-import Content from './components/layout/Main.vue'
+import MainNav from './components/layout/nav/MainNav.vue'
 
-@Options({
-  components: {
-    Header,
-    Nav,
-    Content
-  }
+export default defineComponent({
+  components: { Header, MainNav }
 })
-export default class App extends Vue {}
 </script>
 
 <style lang="scss">

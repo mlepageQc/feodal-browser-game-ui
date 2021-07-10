@@ -1,6 +1,9 @@
 <template>
-	<button class="button">
-	</button>
+	<nav class="nav">
+		<ul>
+			<slot />
+		</ul>
+	</nav>
 </template>
 
 <script lang="ts">
@@ -10,10 +13,7 @@ export default defineComponent({})
 </script>
 
 <style lang="scss">
-	.button {
-		border-radius: 2px;
-		border: 1px solid black;
-		display: flex;
-		justify-content: center;
+	.nav {
+		border-right: 1px solid black;
 	}
 </style>

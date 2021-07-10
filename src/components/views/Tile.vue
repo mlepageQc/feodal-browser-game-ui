@@ -1,19 +1,19 @@
 <template>
-  <div class="info">
-    <div class="info--nav">
+  <div class="tile">
+    <div class="tile--nav">
       Accès sur différentes informations de la tuile (icones), ce menu n'est qu'une idée
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Vue } from 'vue-class-component'
+import { defineComponent } from 'vue'
 
-export default class Info extends Vue {}
+export default defineComponent({})
 </script>
 
 <style lang="scss">
-  .info {
+  .tile {
     border-left: 1px solid black;
     background: #EBEBEB;
     &--nav {
