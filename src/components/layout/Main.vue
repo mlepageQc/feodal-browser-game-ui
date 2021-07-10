@@ -1,8 +1,8 @@
 <template>
-  <div class="content">
+  <main class="content">
 		<Map class="content--map" />
 		<Info class="content--info" />
-  </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -13,7 +13,7 @@ import Info from './Info.vue'
 @Options({
 	components: { Map, Info }
 })
-export default class Nav extends Vue {
+export default class Main extends Vue {
 	display_map: boolean = false
 }
 </script>
@@ -22,10 +22,10 @@ export default class Nav extends Vue {
   .content {
 		display: flex;
 		&--map {
-			flex: 4;
+			flex: 5;
 		}
 		&--info {
-			flex: 1;
+			flex: 2;
 		}
   }
 </style>
