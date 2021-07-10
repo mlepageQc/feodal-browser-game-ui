@@ -1,8 +1,9 @@
-import VueRouter from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 import Map from '../components/views/Map.vue'
 import Tile from '../components/views/Tile.vue'
 
-const router = new VueRouter({
+const router = createRouter({
+	history: createWebHistory(),
 	routes: [
 		{
 			path: '/', 
@@ -17,7 +18,11 @@ const router = new VueRouter({
 				{ 
 					path: ':coordinates', 
 					name: 'tile',
-					component: Tile 
+					component: Tile,
+					props: (to) => {
+						const coordinates = (to.params.coordinates as string).split(':')
+						return { x: coordinates[0], y: coordinates[1] }
+					}
 				}
 			]
 		}
