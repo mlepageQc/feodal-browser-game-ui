@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import Map from '../views/Map.vue'
 import Tile from '../views/Tile.vue'
 
-const router = createRouter({
+export default createRouter({
 	history: createWebHashHistory(),
 	routes: [
 		{
@@ -31,5 +31,3 @@ const router = createRouter({
 		}
 	]
 })
-
-export default router
