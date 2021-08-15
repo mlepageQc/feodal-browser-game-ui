@@ -9,13 +9,13 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { RouteLocationNormalized } from 'vue-router'
+import { RouteLocation } from 'vue-router'
 import { TranslateResult } from 'vue-i18n'
 
 export default defineComponent({
 	props: {
 		to: {
-			type: Object as () => RouteLocationNormalized,
+			type: Object as () => RouteLocation,
 			required: true
 		},
 		tooltip: {
