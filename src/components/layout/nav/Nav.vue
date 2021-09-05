@@ -14,7 +14,7 @@ export default defineComponent({})
 
 <style lang="scss">
 	.nav {
-		min-width: 60px;
+		flex: 0 0 60px;
     display: flex;
 		flex-direction: column;
 		border-right: 1px solid black;

@@ -1,0 +1,19 @@
+.minimap {
+	position: absolute;
+	bottom: 50px;
+	right: 50px;
+	box-sizing: border-box;
+	border: 2px solid black;
+	display: flex;
+	&_no-events {
+		pointer-events: none;
+	}
+	&--selector {
+		position: absolute;
+		top: 0;
+		left: 0;
+		border: 2px solid black;
+		pointer-events: none;
+		box-sizing: border-box;
+	}
+}

@@ -1,20 +1,21 @@
 <template>
-  <Header />
-  <div id="bottom">
-    <MainNav />
-    <main>
-      <router-view />
-    </main>
-  </div>
+  <router-view />
+  <!-- <Login v-if="!authenticated" /> -->
+  <!-- <template v-else>
+    <Header />
+    <div id="bottom">
+      <MainNav />
+      <main>
+        <router-view />
+      </main>
+    </div>
+  </template> -->
 </template>
 
 <script lang="ts">
 import { defineComponent  } from 'vue'
-import Header from './components/layout/Header.vue'
-import MainNav from './components/layout/nav/MainNav.vue'
 
 export default defineComponent({
-  components: { Header, MainNav }
 })
 </script>
 
@@ -38,5 +39,6 @@ export default defineComponent({
   }
   main {
     display: flex;
+    flex-grow: 1;
   }
 </style>

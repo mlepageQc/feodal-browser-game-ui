@@ -13,7 +13,7 @@ export default defineComponent({})
 <style lang="scss">
   header {
     background: teal;
-    height: 50px;
+    min-height: 50px;
     display: flex;
     align-items: center;
     padding: 0 16px;

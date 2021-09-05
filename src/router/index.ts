@@ -1,6 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import Map from '../views/Map.vue'
-import Tile from '../views/Tile.vue'
+import Login from '@/components/views/Login.vue'
+import Signup from '@/components/views/Signup.vue'
+import Map from '@/components/views/Map.vue'
+import Tile from '@/components/views/Tile.vue'
 
 export default createRouter({
 	history: createWebHashHistory(),
@@ -8,24 +10,28 @@ export default createRouter({
 		{
 			path: '/',
 			name: 'root',
-			redirect: { name: 'map' }
+			redirect: { name: 'login' }
+		},
+		{
+			path: '/login',
+			name: 'login',
+			component: Login
+		},
+		{
+			path: '/signup',
+			name: 'signup',
+			component: Signup
 		},
 		{ 
 			path: '/map', 
 			name: 'map',
 			component: Map,
 			children: [
-				{ 
-					path: ':coordinates', 
+				{
+					path: '/tile', 
 					name: 'tile',
 					component: Tile,
-					props: (to) => {
-						const coordinates = (to.params.coordinates as string).split(':')
-						return { 
-							x: coordinates[0], 
-							y: coordinates[1]
-						}
-					}
+					props: (to) => to.query
 				}
 			]
 		}

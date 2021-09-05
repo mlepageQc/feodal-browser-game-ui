@@ -9,7 +9,6 @@ import {
 
 export default class Minimap {
 	private _minimap: HTMLDivElement = document.createElement('div')
-	private _playground: HTMLDivElement = document.createElement('div')
 	private _canvas: HTMLCanvasElement = document.createElement('canvas')
 	private _selector: HTMLDivElement = document.createElement('div')
 	private _isDragging: boolean = false
@@ -29,14 +28,14 @@ export default class Minimap {
 		return this._fetchMinimapBase64Image
 	}
 
-	private get minimap (): HTMLDivElement {
+	get isDragging (): boolean {
+		return this._isDragging
+	}
+
+	get minimap (): HTMLDivElement {
 		return this._minimap
 	}
 
-	private get playground (): HTMLDivElement {
-		return this._playground
-	}
-	
 	private get canvas (): HTMLCanvasElement {
 		return this._canvas
 	}
@@ -53,10 +52,6 @@ export default class Minimap {
 		return this.canvas.getContext('2d')!
 	}
 
-	private get isDragging (): boolean {
-		return this._isDragging
-	}
-
 	private get isSelectorMounted (): boolean {
 		return this._isSelectorMounted
 	}
@@ -69,12 +64,8 @@ export default class Minimap {
 		return getRoundedAttributeValueFromElement(this.container, 'height')
 	}
 
-	private set minimap (element: HTMLDivElement) {
+	set minimap (element: HTMLDivElement) {
 		this._minimap = element
-	}
-
-	private set playground (element: HTMLDivElement) {
-		this._playground = element
 	}
 
 	private set canvas (element: HTMLCanvasElement) {
@@ -85,7 +76,7 @@ export default class Minimap {
 		this._selector = element
 	}
 
-	private set isDragging (value: boolean) {
+	set isDragging (value: boolean) {
 		this._isDragging = value
 	}
 
@@ -97,10 +88,11 @@ export default class Minimap {
 		this.setupMinimapAndAppendToContainer()
 		this.appendCanvasToMinimap()
 		this.setupSelectorAndAppendToMinimap()
+		this.setup()
 	}
 
 	setup = async (): Promise<void> => {
-		this.render(await this.fetchMinimapBase64Image())
+		this.renderImage(await this.fetchMinimapBase64Image())
 	}
 
 	onMapDrag ({ overflowRight, overflowBottom, marginLeft, marginTop }: MapSelectionChangeParams) {
@@ -123,28 +115,20 @@ export default class Minimap {
 	}
 
 	private setupSelectorAndAppendToMinimap (): void {
-		this.selector.className = 'minimap__selector'
+		this.selector.className = 'minimap--selector'
 		this.minimap.appendChild(this.selector)
 	}
 
-	private render (minimapResponse: AxiosResponse<any>): void {
-		this.loadImage(minimapResponse.data)
-	}
-
-	private loadImage (base64Image: AxiosResponse<any>) {
+	private renderImage (minimapResponse: AxiosResponse<any>): void {
 		const image = new window.Image()
 		image.onload = () => {
-			this.addImageToCanvas(image, { x: 0, y: 0 })
+			this.canvas.width = image.width
+			this.canvas.height = image.height
+			this.canvasContext.drawImage(image, 0, 0)
 			this.setupSelector()
-			this.attachPlaygroundEventListeners()
+			this.attachMinimapEventListeners()
 		}
-		image.src = `data:image/png;base64,${base64Image}`
-	}
-
-	private addImageToCanvas (image: HTMLImageElement, { x, y }: CoordinatesSet): void {
-		this.canvas.width = MINIMAP_SIZE
-		this.canvas.height = MINIMAP_SIZE
-		this.canvasContext.drawImage(image, x, y)
+		image.src = `data:image/png;base64,${minimapResponse.data}`
 	}
 
 	private setupSelector (): void {
@@ -156,24 +140,25 @@ export default class Minimap {
 		this.isSelectorMounted = true
 	}
 
-	private attachPlaygroundEventListeners (): void {
-		this.playground.addEventListener('mousedown', this.onMouseDown)
-		this.playground.addEventListener('mousemove', this.onMouseMove)
-		this.playground.addEventListener('mouseup', this.onMouseUp)
+	private attachMinimapEventListeners (): void {
+		this.minimap.addEventListener('mousedown', this.onMouseDown)
+		this.minimap.addEventListener('mousemove', this.onMouseMove)
+		this.minimap.addEventListener('mouseup', this.onMouseUp)
 	}
 
-	private onMouseDown (event: MouseEvent): void {
+	private onMouseDown = (event: MouseEvent): void => {
 		this.isDragging = true
 		this.moveSelector(event)
+		event.preventDefault()
 	}
 
-	private onMouseMove (event: MouseEvent): boolean | void {
+	private onMouseMove = (event: MouseEvent): boolean | void => {
 		if (!this.isDragging) return true
 
 		this.moveSelector(event)
 	}
 
-	private onMouseUp (): void {
+	private onMouseUp = (): void => {
 		this.isDragging = false
 	}
 
@@ -225,11 +210,11 @@ export default class Minimap {
 	}
 
 	private movedSelectorCenterX (event: any): number {
-		return (event.layerX - this.selectorAttribute('width') / 2) - this.selectorAttribute('borderLeftWidth') * 2
+		return (event.layerX - this.selectorAttribute('width') / 2) - this.selectorAttribute('border-left-width') * 2
 	}
 
 	private movedSelectorCenterY (event: any): number {
-		return (event.layerY - this.selectorAttribute('height') / 2) - this.selectorAttribute('borderTopWidth') * 2
+		return (event.layerY - this.selectorAttribute('height') / 2) - this.selectorAttribute('border-top-width') * 2
 	}
 
 	private selectorAttribute (attribute: string): number {

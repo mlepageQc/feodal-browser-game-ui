@@ -1,10 +1,10 @@
 <template>
-  <div class="map">
+  <div class="app-map" v-show="map">
     <div 
-      class="map--display"
+      class="map--container"
       ref="map_container" />
     <router-view class="map--tile" />
-	</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -13,37 +13,40 @@ import { fetchMapBase64Image, fetchMinimapBase64Image } from '@/api/MapApi'
 import Map from '@/lib/map/Map'
 
 export default defineComponent({
+  data () {
+    return {
+      map: null as null | Map
+    }
+  },
   mounted (): void {
     this.initializeMap()
   },
   methods: {
     initializeMap (): void {
-      const map: Map = new Map(
+      this.map = new Map(
         this.$refs.map_container as HTMLDivElement,
         fetchMapBase64Image,
         fetchMinimapBase64Image,
-        () => null,
+        ({ x, y }) => this.$router.push({ name: 'tile', query: { x, y } }),
         0
       )
-      map.setup()
-      map.mount()
     }
   }
 })
 </script>
 
 <style lang="scss">
-  .map {
+  @import '../../lib/map/style/map.scss';
+  @import '../../lib/map/style/minimap.scss';
+
+  .app-map {
     display: flex;
-    &--display {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 56px;
-      flex: 5;
-    }
-    &--tile {
-      flex: 2; 
+    flex-grow: 1;
+    .map{
+      &--container {
+        position: relative;
+        flex: 6
+      }
     }
   }
 </style>
