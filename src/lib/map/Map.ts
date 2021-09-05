@@ -25,31 +25,32 @@ export default class Map {
 
 	constructor(
 		private readonly _container: HTMLDivElement,
-		private readonly _fetchMapBase64Image: (zoomLevel: ZoomLevel) => Promise<any>,
-		private readonly _fetchMinimapBase64Image: () => Promise<any>,
+		private readonly _mapBase64String: string,
+		private readonly _minimapBase64String: string,
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
 		private _zoomLevel: ZoomLevel
 	) {
 		this._minimap = new Minimap(
-			this.container,
-			this.fetchMinimapBase64Image,
+			_container,
+			_minimapBase64String,
 			this.onMinimapSelectionChange
 		)
-		
+	
 		this.mount()
 		this.minimap.mount()
+		this.isMounted = true
 	}
 
 	get isMounted (): boolean {
 		return this._isMounted
 	}
 
-	private get fetchMapBase64Image (): (zoomLevel: ZoomLevel) => Promise<any> {
-		return this._fetchMapBase64Image
+	private get mapBase64String (): string {
+		return this._mapBase64String
 	}
 
-	private get fetchMinimapBase64Image (): () => Promise<any> {
-		return this._fetchMinimapBase64Image
+	private get minimapBase64String (): string {
+		return this._minimapBase64String
 	}
 
 	private get isDragging (): boolean {
@@ -160,7 +161,9 @@ export default class Map {
 		this._imageData = imageData
 	}
 
-	mount (): void {
+	async mount (): Promise<void> {
+		await this.renderImage()
+
 		this.playground.appendChild(this.hoveredTile)
 		this.playground.appendChild(this.selectedTile)
 		this.playground.appendChild(this.canvas)
@@ -170,15 +173,9 @@ export default class Map {
 		this.setupHoveredTileAndAppendToPlayground()
 		this.setupSelectedTileAndAppendToPlayground()
 		this.appendCanvasToPlayground()
-		this.setup()
-	}
-
-	setup = async (): Promise<void> => {
-		this.imageData = (await this.fetchMapBase64Image(this.zoomLevel)).data
-		this.renderImage()
 		this.attachPlaygroundEventListeners()
+
 		document.addEventListener('mouseleave', this.stopDrag)
-		this.isMounted = true
 	}
 
 	stopDrag = (): void => {
@@ -218,18 +215,22 @@ export default class Map {
 		this.playground.appendChild(this.canvas)
 	}
 
-	private renderImage (): void {
-		const image = new window.Image()
-		image.onload = () => {
-			this.map.style.width = this.containerWidth + 'px'
-			this.map.style.height = this.containerHeight + 'px'
-			this.playground.style.width = image.width + 'px'
-			this.playground.style.height = image.height + 'px'
-			this.canvas.width = image.width
-			this.canvas.height = image.height
-			this.canvasContext.drawImage(image, 0, 0)
-		}
-		image.src = `data:image/png;base64,${this.imageData}`
+	private renderImage (): Promise<void> {
+		return new Promise((resolve, _reject) => {
+			const image = new window.Image()
+			image.onload = () => {
+				this.map.style.width = this.containerWidth + 'px'
+				this.map.style.height = this.containerHeight + 'px'
+				this.playground.style.width = image.width + 'px'
+				this.playground.style.height = image.height + 'px'
+				this.canvas.width = image.width
+				this.canvas.height = image.height
+				this.canvasContext.drawImage(image, 0, 0)
+				this.isMounted = true
+				resolve()
+			}
+			image.src = `data:image/png;base64,${this.mapBase64String}`
+		})
 	}
 
 	private attachPlaygroundEventListeners (): void {

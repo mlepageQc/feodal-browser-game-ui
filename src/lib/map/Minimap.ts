@@ -16,7 +16,7 @@ export default class Minimap {
 
 	constructor (
 		private readonly _container: HTMLDivElement,
-		private readonly _fetchMinimapBase64Image: () => Promise<any>,
+		private readonly _minimapBase64String: string,
 		private readonly _onSelectionChange: MinimapSelectionChange
 	) {}
 
@@ -24,8 +24,8 @@ export default class Minimap {
 		return this._onSelectionChange
 	}
 
-	get fetchMinimapBase64Image (): () => Promise<any> {
-		return this._fetchMinimapBase64Image
+	get minimapBase64String (): string {
+		return this._minimapBase64String
 	}
 
 	get isDragging (): boolean {
@@ -84,15 +84,12 @@ export default class Minimap {
 		this._isSelectorMounted = value
 	}
 
-	mount (): void {
+	async mount (): Promise<void> {
+		await this.renderImage()
+
 		this.setupMinimapAndAppendToContainer()
 		this.appendCanvasToMinimap()
 		this.setupSelectorAndAppendToMinimap()
-		this.setup()
-	}
-
-	setup = async (): Promise<void> => {
-		this.renderImage(await this.fetchMinimapBase64Image())
 	}
 
 	onMapDrag ({ overflowRight, overflowBottom, marginLeft, marginTop }: MapSelectionChangeParams) {
@@ -119,16 +116,19 @@ export default class Minimap {
 		this.minimap.appendChild(this.selector)
 	}
 
-	private renderImage (minimapResponse: AxiosResponse<any>): void {
-		const image = new window.Image()
-		image.onload = () => {
-			this.canvas.width = image.width
-			this.canvas.height = image.height
-			this.canvasContext.drawImage(image, 0, 0)
-			this.setupSelector()
-			this.attachMinimapEventListeners()
-		}
-		image.src = `data:image/png;base64,${minimapResponse.data}`
+	private renderImage (): Promise<void> {
+		return new Promise((resolve, _reject) => {
+			const image = new window.Image()
+			image.onload = () => {
+				this.canvas.width = image.width
+				this.canvas.height = image.height
+				this.canvasContext.drawImage(image, 0, 0)
+				this.setupSelector()
+				this.attachMinimapEventListeners()
+				resolve()
+			}
+			image.src = `data:image/png;base64,${this.minimapBase64String}`
+		})	
 	}
 
 	private setupSelector (): void {

@@ -1,36 +1,19 @@
 <template>
-  <div class="app-map" v-show="map">
-    <div 
+  <div class="app-map">
+    <div
       class="map--container"
-      ref="map_container" />
+      ref="mapContainer" />
     <router-view class="map--tile" />
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { fetchMapBase64Image, fetchMinimapBase64Image } from '@/api/MapApi'
-import Map from '@/lib/map/Map'
+import { initializeMap } from '@/map'
 
 export default defineComponent({
-  data () {
-    return {
-      map: null as null | Map
-    }
-  },
   mounted (): void {
-    this.initializeMap()
-  },
-  methods: {
-    initializeMap (): void {
-      this.map = new Map(
-        this.$refs.map_container as HTMLDivElement,
-        fetchMapBase64Image,
-        fetchMinimapBase64Image,
-        ({ x, y }) => this.$router.push({ name: 'tile', query: { x, y } }),
-        0
-      )
-    }
+    initializeMap(this.$refs.mapContainer as HTMLDivElement)
   }
 })
 </script>
