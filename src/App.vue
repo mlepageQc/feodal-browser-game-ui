@@ -1,5 +1,10 @@
 <template>
-  <router-view />
+  <Spinner v-if="!initialized" />
+  <template v-else>
+    <Header />
+    <router-view />
+  </template>
+  
   <!-- <Login v-if="!authenticated" /> -->
   <!-- <template v-else>
     <Header />
@@ -15,11 +20,19 @@
 <script lang="ts">
 import { defineComponent  } from 'vue'
 import { mapState } from 'vuex'
+import Spinner from '@/components/ui/Spinner.vue'
+//import MainNav from '@/components/layout/nav/MainNav.vue'
+import Header from '@/components/layout/Header.vue'
 
 export default defineComponent({
+  components: {
+    Spinner,
+    Header
+  },
   computed: {
     ...mapState([
-      'initialized'
+      'initialized',
+      'map'
     ])
   }
 })
@@ -31,8 +44,8 @@ export default defineComponent({
   body {
     margin: 0;
     height: 100vh;
-    min-width: 1024px;
     font-family: $base-font;
+    background: black;
   }
   #app {
     display: flex;

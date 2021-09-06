@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios'
 import { 
 	CoordinatesSet,
 	MinimapSelectorChangeParams,
@@ -15,8 +14,6 @@ export default class Map {
 	private readonly _hoveredTile: HTMLDivElement = document.createElement('div')
 	private readonly _selectedTile: HTMLDivElement = document.createElement('div')
 	private readonly _minimap: Minimap
-	private _imageData: HTMLImageElement | null = null
-	private _isMounted: boolean = false
 	private _isDragging: boolean = false
 	private _initialClientX: number = 0
 	private _initialClientY: number = 0
@@ -26,31 +23,22 @@ export default class Map {
 	constructor(
 		private readonly _container: HTMLDivElement,
 		private readonly _mapBase64String: string,
-		private readonly _minimapBase64String: string,
+		minimapBase64String: string,
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
 		private _zoomLevel: ZoomLevel
 	) {
 		this._minimap = new Minimap(
 			_container,
-			_minimapBase64String,
+			minimapBase64String,
 			this.onMinimapSelectionChange
 		)
-	
+
 		this.mount()
 		this.minimap.mount()
-		this.isMounted = true
-	}
-
-	get isMounted (): boolean {
-		return this._isMounted
 	}
 
 	private get mapBase64String (): string {
 		return this._mapBase64String
-	}
-
-	private get minimapBase64String (): string {
-		return this._minimapBase64String
 	}
 
 	private get isDragging (): boolean {
@@ -129,14 +117,6 @@ export default class Map {
 		return this.initialClientY - this.initialMarginTop
 	}
 
-	private get imageData (): HTMLImageElement | null {
-		return this._imageData
-	}
-
-	set isMounted (value: boolean) {
-		this._isMounted = value
-	}
-
 	private set isDragging (value: boolean) {
 		this._isDragging = value
 	}
@@ -155,10 +135,6 @@ export default class Map {
 
 	private set initialMarginTop (value: number) {
 		this._initialMarginTop = value
-	}
-
-	private set imageData (imageData: HTMLImageElement | null) {
-		this._imageData = imageData
 	}
 
 	async mount (): Promise<void> {
@@ -183,6 +159,54 @@ export default class Map {
 		this.addPlaygroundTransition()
 	}
 
+	setSelectedTile (marginLeft: number, marginTop: number): void {
+		this.minimap.setupSelector()
+		
+		this.selectedTile.style.left = `${marginLeft}px`
+		this.selectedTile.style.top = `${marginTop}px`
+
+		this.dragMap(
+			-marginLeft + this.containerWidth / 2 - TILE_SIZE / 2, 
+			-marginTop + this.containerHeight / 2 - TILE_SIZE / 2
+		)
+	}
+
+	setMapDimensions (): void {
+		this.map.style.width = this.containerWidth + 'px'
+		this.map.style.height = this.containerHeight + 'px'
+	}
+
+	reCenter (): void {
+		this.minimap.setupSelector()
+
+    this.dragMap(
+			this.playgroundAttribute('margin-left'),
+			this.playgroundAttribute('margin-top')
+		) 
+	}
+
+	private dragMap (marginLeft: number, marginTop: number): void {
+		let overflowRight = false
+		let overflowBottom = false
+
+		if (marginLeft > 0) {
+			marginLeft = 0
+		} else if (marginLeft < (this.containerWidth - this.playgroundAttribute('width'))) {
+			marginLeft = this.containerWidth - this.playgroundAttribute('width')
+			overflowRight = true
+		}
+
+		if (marginTop > 0) {
+			marginTop = 0
+		} else if (marginTop < (this.containerHeight - this.playgroundAttribute('height'))) {
+			marginTop = this.containerHeight - this.playgroundAttribute('height')
+			overflowBottom = true
+		}
+
+		this.translateMap(marginLeft, marginTop)
+		this.minimap.onMapDrag({ overflowRight, overflowBottom, marginLeft, marginTop })
+	}
+
 	private addPlaygroundTransition (): void {
 		this.playground.classList.add('map--playground_with-transition')
 	}
@@ -203,11 +227,15 @@ export default class Map {
 
 	private setupHoveredTileAndAppendToPlayground (): void {
 		this.hoveredTile.className = 'map--hovered-tile'
+		this.hoveredTile.style.width = `${TILE_SIZE}px`
+		this.hoveredTile.style.height = `${TILE_SIZE}px`
 		this.playground.appendChild(this.hoveredTile)
 	}
 
 	private setupSelectedTileAndAppendToPlayground (): void {
 		this.selectedTile.className = 'map--selected-tile'
+		this.selectedTile.style.width = `${TILE_SIZE}px`
+		this.selectedTile.style.height = `${TILE_SIZE}px`
 		this.playground.appendChild(this.selectedTile)
 	}
 
@@ -219,14 +247,12 @@ export default class Map {
 		return new Promise((resolve, _reject) => {
 			const image = new window.Image()
 			image.onload = () => {
-				this.map.style.width = this.containerWidth + 'px'
-				this.map.style.height = this.containerHeight + 'px'
+				this.setMapDimensions()
 				this.playground.style.width = image.width + 'px'
 				this.playground.style.height = image.height + 'px'
 				this.canvas.width = image.width
 				this.canvas.height = image.height
 				this.canvasContext.drawImage(image, 0, 0)
-				this.isMounted = true
 				resolve()
 			}
 			image.src = `data:image/png;base64,${this.mapBase64String}`
@@ -304,37 +330,7 @@ export default class Map {
 		const selectedTileLeft = event.layerX - event.layerX % TILE_SIZE
     const selectedTileTop = event.layerY - event.layerY % TILE_SIZE
 
-		this.selectedTile.style.left = `${selectedTileLeft}px`
-		this.selectedTile.style.top = `${selectedTileTop}px`
-
-		this.dragMap(
-			-selectedTileLeft + this.containerWidth / 2 - TILE_SIZE / 2, 
-			-selectedTileTop + this.containerHeight / 2 - TILE_SIZE / 2
-		)
-
 		this.onTileSelected({ x: selectedTileLeft, y: selectedTileTop })
-	}
-
-	private dragMap (marginLeft: number, marginTop: number): void {
-		let overflowRight = false
-		let overflowBottom = false
-
-		if (marginLeft > 0) {
-			marginLeft = 0
-		} else if (marginLeft < (this.containerWidth - this.playgroundAttribute('width'))) {
-			marginLeft = this.containerWidth - this.playgroundAttribute('width')
-			overflowRight = true
-		}
-
-		if (marginTop > 0) {
-			marginTop = 0
-		} else if (marginTop < (this.containerHeight - this.playgroundAttribute('height'))) {
-			marginTop = this.containerHeight - this.playgroundAttribute('height')
-			overflowBottom = true
-		}
-
-		this.translateMap(marginLeft, marginTop)
-		this.minimap.onMapDrag({ overflowRight, overflowBottom, marginLeft, marginTop })
 	}
 
 	private translateMap (marginLeft: number, marginTop: number) {

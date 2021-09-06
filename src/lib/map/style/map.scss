@@ -1,5 +1,4 @@
 .map {
-	overflow: hidden;
 	&:hover {
 		cursor: pointer;
 	}
@@ -16,8 +15,6 @@
 		position: absolute;
 		background: white;
 		opacity: 0.5;
-		width: 32px;
-		height: 32px;
 		pointer-events: none;
 		box-sizing: border-box;
 		border-radius: 4px;
@@ -26,9 +23,7 @@
 		position: absolute;
 		background: black;
 		opacity: 0.5;
-		width: 32px;
 		box-sizing: border-box;
-		height: 32px;
 		border-radius: 4px;
 		pointer-events: none;
 	}

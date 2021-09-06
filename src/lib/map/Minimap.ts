@@ -86,7 +86,7 @@ export default class Minimap {
 
 	async mount (): Promise<void> {
 		await this.renderImage()
-
+		
 		this.setupMinimapAndAppendToContainer()
 		this.appendCanvasToMinimap()
 		this.setupSelectorAndAppendToMinimap()
@@ -100,6 +100,15 @@ export default class Minimap {
 		if (overflowBottom) newY = MINIMAP_SIZE - this.selectorAttribute('height')
 
 		this.translateMinimapSelector({ x: newX, y: newY })
+	}
+
+	setupSelector (): void {
+		const selectorWidth = Math.round(this.containerWidth / MAP_SIZE * MINIMAP_SIZE)
+		const selectorHeight = Math.round(this.containerHeight / MAP_SIZE * MINIMAP_SIZE)
+
+		this.selector.style.height = `${selectorHeight}px`
+		this.selector.style.width = `${selectorWidth}px`
+		this.isSelectorMounted = true
 	}
 
 	private setupMinimapAndAppendToContainer (): void {
@@ -131,15 +140,6 @@ export default class Minimap {
 		})	
 	}
 
-	private setupSelector (): void {
-		const selectorWidth = Math.round(this.containerWidth / MAP_SIZE * MINIMAP_SIZE)
-		const selectorHeight = Math.round(this.containerHeight / MAP_SIZE * MINIMAP_SIZE)
-
-		this.selector.style.height = `${selectorHeight}px`
-		this.selector.style.width = `${selectorWidth}px`
-		this.isSelectorMounted = true
-	}
-
 	private attachMinimapEventListeners (): void {
 		this.minimap.addEventListener('mousedown', this.onMouseDown)
 		this.minimap.addEventListener('mousemove', this.onMouseMove)
@@ -162,7 +162,7 @@ export default class Minimap {
 		this.isDragging = false
 	}
 
-	private moveSelector (event: MouseEvent): void {
+	private moveSelector (event: any): void {
 		let overflowRight = false
 		let overflowBottom = false
 		let newX = 0
@@ -210,11 +210,11 @@ export default class Minimap {
 	}
 
 	private movedSelectorCenterX (event: any): number {
-		return (event.layerX - this.selectorAttribute('width') / 2) - this.selectorAttribute('border-left-width') * 2
+		return (event.layerX - this.selectorAttribute('width') / 2)
 	}
 
 	private movedSelectorCenterY (event: any): number {
-		return (event.layerY - this.selectorAttribute('height') / 2) - this.selectorAttribute('border-top-width') * 2
+		return (event.layerY - this.selectorAttribute('height') / 2)
 	}
 
 	private selectorAttribute (attribute: string): number {

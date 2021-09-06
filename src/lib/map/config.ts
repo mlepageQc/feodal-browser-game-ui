@@ -1,5 +1,5 @@
 export const MAP_SIZE = 8192
-export const TILE_SIZE = 32
+export const TILE_SIZE = 64
 export const MINIMAP_SIZE = 280
 
 export const MAP_ZOOM_LEVELS = {

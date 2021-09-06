@@ -32,7 +32,14 @@ const router = createRouter({
 					path: 'tile', 
 					name: 'tile',
 					component: Tile,
-					props: (to) => to.query
+					props: (to) => {
+						return {
+							coordinates: {
+								x: parseInt(to.query.x as string),
+								y: parseInt(to.query.y as string)
+							}
+						}
+					}
 				}
 			]
 		}
