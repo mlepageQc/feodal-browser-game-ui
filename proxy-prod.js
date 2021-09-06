@@ -2,7 +2,7 @@ var httpProxy = require('http-proxy');
 
 var proxy = httpProxy.createProxyServer({ target: 'https://obscure-plateau-79291.herokuapp.com' })
 
-var PORT = 8000
+var PORT = process.env.PORT || 8000
 
 proxy.listen(PORT);
 
