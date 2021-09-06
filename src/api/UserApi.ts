@@ -7,3 +7,7 @@ export function createUser (name: string, email: string, password: string, passw
 		}
 	})
 }
+
+export function fetchCurrentUser () {
+	return axios.get('/me')
+}

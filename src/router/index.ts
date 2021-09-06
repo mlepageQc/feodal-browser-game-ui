@@ -1,10 +1,11 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import Login from '@/components/views/Login.vue'
-import Signup from '@/components/views/Signup.vue'
-import Map from '@/components/views/Map.vue'
-import Tile from '@/components/views/Tile.vue'
+import { createRouter, createWebHashHistory, START_LOCATION } from 'vue-router'
+import Login from '@/views/Login.vue'
+import Signup from '@/views/Signup.vue'
+import Map from '@/views/Map.vue'
+import Tile from '@/views/Tile.vue'
+import store from '@/store'
 
-export default createRouter({
+const router = createRouter({
 	history: createWebHashHistory(),
 	routes: [
 		{
@@ -28,7 +29,7 @@ export default createRouter({
 			component: Map,
 			children: [
 				{
-					path: '/tile', 
+					path: 'tile', 
 					name: 'tile',
 					component: Tile,
 					props: (to) => to.query
@@ -37,3 +38,10 @@ export default createRouter({
 		}
 	]
 })
+
+router.beforeEach(async (_to, from, next) => {
+	if (from == START_LOCATION) store.dispatch('initialize')
+	next()
+})
+
+export default router

@@ -1,5 +1,5 @@
 <template>
-  <div class="app-map">
+  <div class="app-map" v-show="map">
     <div
       class="map--container"
       ref="mapContainer" />
@@ -10,17 +10,29 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { initializeMap } from '@/map'
+import { mapState } from 'vuex'
 
 export default defineComponent({
   mounted (): void {
     initializeMap(this.$refs.mapContainer as HTMLDivElement)
+  },
+  computed: { 
+    ...mapState('session', [
+      'currentUser'
+    ]),
+    ...mapState([
+      'map'
+    ]),
+    showMap (): boolean {
+      return this.currentUser
+    } 
   }
 })
 </script>
 
 <style lang="scss">
-  @import '../../lib/map/style/map.scss';
-  @import '../../lib/map/style/minimap.scss';
+  @import '../lib/map/style/map.scss';
+  @import '../lib/map/style/minimap.scss';
 
   .app-map {
     display: flex;
