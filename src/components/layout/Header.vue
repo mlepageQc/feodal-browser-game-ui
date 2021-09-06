@@ -1,13 +1,21 @@
 <template>
   <header>
-    Bannière ici
+    <button @click="logout">Log out</button>
   </header>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { logout } from '@/api/SessionApi'
 
-export default defineComponent({})
+export default defineComponent({
+  methods: {
+    async logout (): Promise<void> {
+      await logout()
+      this.$router.push({ name: 'login' })
+    }
+  }
+})
 </script>
 
 <style lang="scss">

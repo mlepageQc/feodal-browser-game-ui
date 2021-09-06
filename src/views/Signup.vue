@@ -17,10 +17,10 @@ export default defineComponent({
 	name: 'signup',
 	data () {
 		return {
-			userName: 'maximelepage',
-			email: 'maximelepage2@gmail.com',
-			password: 'fritepizza',
-			passwordConfirmation: 'fritepizza'
+			userName: '',
+			email: '',
+			password: '',
+			passwordConfirmation: ''
 		}
 	},
 	methods: {

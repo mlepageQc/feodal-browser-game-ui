@@ -16,8 +16,8 @@ export default defineComponent({
 	name: 'login',
 	data () {
 		return {
-			userName: 'usertest',
-			password: 'fritepizza'
+			userName: '',
+			password: ''
 		}
 	},
 	methods: {

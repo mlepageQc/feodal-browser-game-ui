@@ -5,5 +5,5 @@ export function login (name: string, password: string) {
 }
 
 export function logout () {
-	return axios.post('/logout')
+	return axios.get('/logout')
 }
