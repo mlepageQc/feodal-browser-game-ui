@@ -1,14 +1,14 @@
 <template>
 	<div class='spinner'>
     <div class='block'>
-        <div class='item'></div>
-        <div class='item'></div>
-        <div class='item'></div>
-        <div class='item'></div>
-        <div class='item'></div>
-        <div class='item'></div>
-        <div class='item'></div>
-        <div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
+			<div class='item'></div>
     </div>
 	</div>
 </template>
@@ -23,7 +23,7 @@ export default defineComponent({})
 	$duration: 0.75s;
 	$size: 1rem;
 
-	.spinner {
+  .spinner {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -32,7 +32,7 @@ export default defineComponent({})
 
 		.block {
 			position: relative;
-			
+
 			> .item {
 				position: absolute;
 				height: $size;
