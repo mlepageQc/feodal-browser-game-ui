@@ -16,8 +16,6 @@
 <script lang="ts">
 import { defineComponent  } from 'vue'
 import { mapState } from 'vuex'
-import Spinner from '@/components/ui/Spinner.vue'
-
 import Header from '@/components/layout/Header.vue'
 
 export default defineComponent({
