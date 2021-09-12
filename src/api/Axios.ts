@@ -14,6 +14,9 @@ const instance = axios.create({
 instance.interceptors.response.use(
   response => response,
   error => {
+
+    console.log(error)
+
     if (error.response.status === 401) router.push({ name: 'login' })
     return Promise.reject(error)
   }
