@@ -16,7 +16,7 @@
 		</div>
 
 		<div>
-			<label for="passwordConfirmation">
+			<label for="passwordConfirmation">Password confirmation</label>
 			<input v-model="passwordConfirmation" type="password" name="passwordConfirmation" />
 		</div>
 		
