@@ -1,10 +1,25 @@
 <template>
   <div class="signup">
-		<input v-model="userName" />
-		<input v-model="email" />
-		<input v-model="password" />
-		<input v-model="passwordConfirmation" />
+		<div>
+			<label for="userName">Email</label>
+			<input v-model="userName" name="userName" />
+		</div>
 
+		<div>
+			<label for="email">Email</label>
+			<input v-model="email" name="email" />
+		</div>
+
+		<div>
+			<label for="password">Password</label>
+			<input v-model="password" type="password" name="password" />
+		</div>
+
+		<div>
+			<label for="passwordConfirmation">
+			<input v-model="passwordConfirmation" type="password" name="passwordConfirmation" />
+		</div>
+		
 		<button type="submit" @click="createUser">Create user</button>
   </div>
 </template>
@@ -45,6 +60,8 @@ export default defineComponent({
 		width: 50%;
 		
 		> * {
+			display: flex;
+			flex-direction: column;
 			margin-bottom: 10px;
 		}
 	}

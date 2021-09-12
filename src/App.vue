@@ -17,12 +17,11 @@
 import { defineComponent  } from 'vue'
 import { mapState } from 'vuex'
 import Spinner from '@/components/ui/Spinner.vue'
-//import MainNav from '@/components/layout/nav/MainNav.vue'
+
 import Header from '@/components/layout/Header.vue'
 
 export default defineComponent({
   components: {
-    Spinner,
     Header
   },
   computed: {
