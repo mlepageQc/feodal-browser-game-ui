@@ -1,10 +1,6 @@
 <template>
-  <Spinner v-if="!initialized" />
-  <template v-else>
-    <Header />
-    <router-view />
-  </template>
-  
+  <Header />
+  <router-view />
   <!-- <Login v-if="!authenticated" /> -->
   <!-- <template v-else>
     <Header />
@@ -32,6 +28,7 @@ export default defineComponent({
   computed: {
     ...mapState([
       'initialized',
+      'authenticated',
       'map'
     ])
   }
