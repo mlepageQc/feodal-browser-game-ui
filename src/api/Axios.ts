@@ -15,7 +15,7 @@ instance.interceptors.response.use(
   response => response,
   error => {
 
-    console.log(error)
+    console.log(error.response)
 
     if (error.response.status === 401) router.push({ name: 'login' })
     return Promise.reject(error)
