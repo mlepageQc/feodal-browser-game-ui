@@ -41,7 +41,7 @@ export default defineComponent({
     margin: 0;
     height: 100vh;
     font-family: $base-font;
-    background: black;
+    background: white;
   }
   #app {
     display: flex;
