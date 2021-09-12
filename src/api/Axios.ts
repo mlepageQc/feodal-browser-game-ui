@@ -1,7 +1,7 @@
 import axios from 'axios'
 import router from '@/router'
 
-const baseURL = process.env === 'development' ? 'http://app.local:8000' : 'obscure-plateau-79291.herokuapp.com'
+const baseURL = process.env === 'development' ? 'http://app.local:8000' : 'https://obscure-plateau-79291.herokuapp.com'
 
 const instance = axios.create({
 	baseURL,
