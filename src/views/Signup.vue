@@ -1,7 +1,7 @@
 <template>
   <div class="signup">
 		<div>
-			<label for="userName">Username</label>
+			<label for="userName">Username (6 char minimum)</label>
 			<input id="userName" v-model="userName" />
 		</div>
 
