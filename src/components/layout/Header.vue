@@ -1,14 +1,20 @@
 <template>
   <header>
-    <button @click="logout">Log out</button>
+    <button v-if="currentUser" @click="logout">Log out</button>
   </header>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { mapState } from 'vuex'
 import { logout } from '@/api/SessionApi'
 
 export default defineComponent({
+  computed: {
+    ...mapState('session', [
+      'currentUser'
+    ])
+  },
   methods: {
     async logout (): Promise<void> {
       await logout()
