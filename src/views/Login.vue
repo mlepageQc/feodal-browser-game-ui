@@ -2,7 +2,7 @@
   <div class="login">
 		<router-link :to="{ name: 'signup' }">No account? Sign up now</router-link>
 		<input v-model="userName" />
-		<input v-model="password" />
+		<input v-model="password" type="password" />
 
 		<button type="submit" @click="createSession">Login</button>
   </div>
@@ -26,7 +26,8 @@ export default defineComponent({
 			'initialize'
 		]),
 		async createSession () {
-			await login(this.userName, this.password)
+			const { jwt } = (await login(this.userName, this.password)).data
+			localStorage.setItem('jwt', jwt)
 			await this.initialize()
 			this.$router.push({ name: 'map' })
 		}

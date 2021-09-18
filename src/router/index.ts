@@ -46,8 +46,12 @@ const router = createRouter({
 	]
 })
 
-router.beforeEach(async (_to, from, next) => {
-	if (from == START_LOCATION) store.dispatch('initialize')
+router.beforeEach((to, from, next) => {
+	const jwt = localStorage.getItem('jwt')
+	if (jwt) {
+		if (from === START_LOCATION) store.dispatch('initialize')
+		if (to.name === 'login') return next({ name: 'map' })
+	}
 	next()
 })
 

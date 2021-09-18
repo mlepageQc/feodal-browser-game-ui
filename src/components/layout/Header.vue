@@ -6,8 +6,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState } from 'vuex'
-import { logout } from '@/api/SessionApi'
+import { mapState, mapActions } from 'vuex'
 
 export default defineComponent({
   computed: {
@@ -16,8 +15,12 @@ export default defineComponent({
     ])
   },
   methods: {
+    ...mapActions('session', [
+      'destroy'
+    ]),
     async logout (): Promise<void> {
-      await logout()
+      await this.destroy()
+      localStorage.removeItem('jwt')
       this.$router.push({ name: 'login' })
     }
   }

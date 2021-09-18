@@ -1,6 +1,8 @@
 var httpProxy = require('http-proxy');
 
-var proxy = httpProxy.createProxyServer({ target: 'http://app.local:3000' })
+var proxy = httpProxy.createProxyServer({ 
+	target: 'http://app.local:3000'
+})
 
 var PORT = 8000
 
