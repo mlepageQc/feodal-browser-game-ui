@@ -10,6 +10,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { mapActions } from 'vuex'
 import { login } from '@/api/SessionApi'
 
 export default defineComponent({
@@ -21,8 +22,12 @@ export default defineComponent({
 		}
 	},
 	methods: {
+		...mapActions('session', [
+			'initialize'
+		]),
 		async createSession () {
 			await login(this.userName, this.password)
+			await this.initialize()
 			this.$router.push({ name: 'map' })
 		}
 	}
