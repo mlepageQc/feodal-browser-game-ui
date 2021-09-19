@@ -10,6 +10,7 @@
 <script lang="ts">
 import { CoordinatesSet } from '@/lib/map/types'
 import { defineComponent } from 'vue'
+import { debounce } from 'lodash'
 import { fetchMapBase64Image, fetchMinimapBase64Image } from '@/api/MapApi'
 import { mapState, mapMutations } from 'vuex'
 import Map from '@/lib/map/Map'
@@ -21,9 +22,14 @@ export default defineComponent({
   },
   beforeRouteUpdate (to, _from, next) {
     if (to.name === 'map') {
-      window.setTimeout(this.map!.reCenter, 0)
+      window.setTimeout(() => { 
+        this.map!.reCenter() 
+      }, 0)
     }
     next()
+  },
+  beforeUnmount () {
+    window.removeEventListener('resize', this.reCenterDebounce)
   },
   computed: { 
     ...mapState('session', [
@@ -50,6 +56,8 @@ export default defineComponent({
         this.onMapSelectionChange,
         0
       ))
+
+      window.addEventListener('resize', this.reCenterDebounce)
     },
     onMapSelectionChange ({ x, y }: CoordinatesSet): void {
       this.$router.push({ 
@@ -59,7 +67,11 @@ export default defineComponent({
           y: y / TILE_SIZE 
         } 
       })
-    }
+    },
+    // eslint-disable-next-line no-unused-vars
+    reCenterDebounce: debounce(function(this: any, _e: any) { 
+      this.map.reCenter()
+    }, 200)
   }
 })
 </script>
