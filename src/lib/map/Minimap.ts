@@ -1,4 +1,3 @@
-import { AxiosResponse } from 'axios'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import { MAP_SIZE, MINIMAP_SIZE } from './config'
 import {

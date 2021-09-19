@@ -13,7 +13,7 @@ const instance = axios.create({
 instance.interceptors.request.use(
   request => {
     const jwt = localStorage.getItem('jwt')
-    if (jwt) request.headers['Authorization'] = `Bearer ${localStorage.getItem('jwt')}`
+    if (jwt) request.headers['Authorization'] = `Bearer ${jwt}`
     return request
   }
 )

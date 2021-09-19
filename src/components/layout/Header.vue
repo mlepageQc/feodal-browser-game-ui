@@ -6,6 +6,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { removeItem } from '@/lib/local-storage'
 import { mapState, mapActions } from 'vuex'
 
 export default defineComponent({
@@ -20,7 +21,7 @@ export default defineComponent({
     ]),
     async logout (): Promise<void> {
       await this.destroy()
-      localStorage.removeItem('jwt')
+      removeItem('jwt')
       this.$router.push({ name: 'login' })
     }
   }

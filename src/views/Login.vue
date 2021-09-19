@@ -11,6 +11,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapActions } from 'vuex'
+import { setItem } from '@/lib/local-storage'
 import { login } from '@/api/SessionApi'
 
 export default defineComponent({
@@ -27,7 +28,7 @@ export default defineComponent({
 		]),
 		async createSession () {
 			const { jwt } = (await login(this.userName, this.password)).data
-			localStorage.setItem('jwt', jwt)
+			setItem('jwt', jwt)
 			await this.initialize()
 			this.$router.push({ name: 'map' })
 		}

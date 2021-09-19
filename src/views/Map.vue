@@ -21,9 +21,7 @@ export default defineComponent({
   },
   beforeRouteUpdate (to, _from, next) {
     if (to.name === 'map') {
-      window.setTimeout(() => {
-        this.map!.reCenter()       
-      }, 0)
+      window.setTimeout(this.map!.reCenter, 0)
     }
     next()
   },

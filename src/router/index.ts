@@ -3,6 +3,7 @@ import Login from '@/views/Login.vue'
 import Signup from '@/views/Signup.vue'
 import Map from '@/views/Map.vue'
 import Tile from '@/views/Tile.vue'
+import { getItem } from '@/lib/local-storage'
 import store from '@/store'
 
 const router = createRouter({
@@ -47,8 +48,9 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-	const jwt = localStorage.getItem('jwt')
-	if (jwt) {
+	if (from !== START_LOCATION && to.name !== 'login') return next()
+
+	if (getItem('jwt')) {
 		if (from === START_LOCATION) store.dispatch('initialize')
 		if (to.name === 'login') return next({ name: 'map' })
 	}
