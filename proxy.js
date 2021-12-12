@@ -1,33 +1,29 @@
-var httpProxy = require('http-proxy');
+const HttpProxy = require('http-proxy');
 
-var proxy = httpProxy.createProxyServer({ 
+const proxy = HttpProxy.createProxyServer({ 
 	target: 'http://app.local:3000'
 })
 
-var PORT = 8000
+const PORT = 8000
 
-proxy.listen(PORT);
+proxy.listen(PORT)
 
 console.log('Proxy listening to port ' + PORT);
 
-var enableCors = function(req, res) {
+const enableCors = (req, res) => {
 	if (req.headers['access-control-request-method']) {
-		res.setHeader('access-control-allow-methods', req.headers['access-control-request-method']);
+		res.setHeader('access-control-allow-methods', req.headers['access-control-request-method'])
 	}
-
 	if (req.headers['access-control-request-headers']) {
-		res.setHeader('access-control-allow-headers', req.headers['access-control-request-headers']);
+		res.setHeader('access-control-allow-headers', req.headers['access-control-request-headers'])
 	}
-
 	if (req.headers.origin) {
-		res.setHeader('access-control-allow-origin', req.headers.origin);
-		res.setHeader('access-control-allow-credentials', 'true');
+		res.setHeader('access-control-allow-origin', req.headers.origin)
+		res.setHeader('access-control-allow-credentials', 'true')
 	}
-};
+}
 
-// set header for CORS
-proxy.on("proxyRes", function(proxyRes, req, res) {
-	console.log('Proxy request')
-	enableCors(req, res);
-});
+proxy.on('proxyRes', (_proxyRes, req, res) => {
+	enableCors(req, res)
+})
 

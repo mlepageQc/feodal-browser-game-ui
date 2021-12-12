@@ -35,6 +35,7 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx",
+    "src/shims-svg.d.ts",
     "src/lib/map/types"
   ],
   "exclude": [

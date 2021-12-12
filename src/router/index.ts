@@ -1,10 +1,19 @@
 import { createRouter, createWebHashHistory, START_LOCATION } from 'vue-router'
 import Login from '@/views/Login.vue'
 import Signup from '@/views/Signup.vue'
+import Header from '@/components/layout/Header.vue'
+import MainNav from '@/components/layout/nav/MainNav.vue'
 import Map from '@/views/Map.vue'
 import Tile from '@/views/Tile.vue'
+import Spinner from '@/components/ui/Spinner.vue'
 import { getItem } from '@/lib/local-storage'
 import store from '@/store'
+
+const BASE_LAYOUT = {
+	spinner: Spinner,
+	header: Header,
+	nav: MainNav
+}
 
 const router = createRouter({
 	history: createWebHashHistory(),
@@ -27,7 +36,7 @@ const router = createRouter({
 		{ 
 			path: '/map', 
 			name: 'map',
-			component: Map,
+			components: { default: Map, ...BASE_LAYOUT },
 			children: [
 				{
 					path: 'tile', 

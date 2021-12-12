@@ -5,21 +5,16 @@ import session from '@/store/modules/session'
 export interface State {
 	map: Map | null
   initialized: boolean
-  authenticated: boolean
 }
 
 const store = createStore<State>({
   state: {
 		map: null,
     initialized: false,
-    authenticated: false
   },
   mutations: {
     setInitialized (state, value) {
       state.initialized = value
-    },
-    setAuthenticated (state, value) {
-      state.authenticated = value
     },
     setMap (state, map) {
       state.map = map

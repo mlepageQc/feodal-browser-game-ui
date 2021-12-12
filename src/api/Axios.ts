@@ -2,10 +2,10 @@ import axios from 'axios'
 import router from '@/router'
 import { getItem, removeItem } from '@/lib/local-storage'
 
-const baseURL = process.env.NODE_ENV === 'development' ? 'http://app.local:8000' : 'https://obscure-plateau-79291.herokuapp.com'
+console.log(process.env.VUE_APP_API_URL)
 
 const instance = axios.create({
-	baseURL,
+	baseURL: process.env.VUE_APP_API_URL,
   headers: {
     'Content-Type': 'application/json'
   }

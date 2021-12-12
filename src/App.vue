@@ -1,32 +1,28 @@
 <template>
-  <Header />
-  <router-view />
-  <!-- <Login v-if="!authenticated" /> -->
-  <!-- <template v-else>
-    <Header />
-    <div id="bottom">
-      <MainNav />
-      <main>
-        <router-view />
-      </main>
-    </div>
-  </template> -->
+  <router-view 
+    id="app-spinner"
+    name="spinner"
+    v-if="!initialized" />
+  <router-view
+    name="header" />
+  <div id="main">
+    <router-view
+      name="nav" />
+    <main>
+      <router-view />
+    </main>
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent  } from 'vue'
 import { mapState } from 'vuex'
-import Header from '@/components/layout/Header.vue'
+
 
 export default defineComponent({
-  components: {
-    Header
-  },
   computed: {
     ...mapState([
-      'initialized',
-      'authenticated',
-      'map'
+      'initialized'
     ])
   }
 })
@@ -34,6 +30,7 @@ export default defineComponent({
 
 <style lang="scss">
   @import './assets/stylesheets/constants.scss';
+  @import './assets/stylesheets/reset.scss';
 
   body {
     margin: 0;
@@ -42,11 +39,16 @@ export default defineComponent({
     background: white;
   }
   #app {
+    position: relative;
     display: flex;
     flex-direction: column;
     height: 100%;
   }
   #bottom {
+    display: flex;
+    flex-grow: 1;
+  }
+  #main {
     display: flex;
     flex-grow: 1;
   }

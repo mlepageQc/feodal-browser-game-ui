@@ -18,14 +18,13 @@ export default defineComponent({})
     display: flex;
 		flex-direction: column;
 		border-right: 1px solid black;
-    padding: 24px 0;
+    padding: 12px 0;
     align-items: center;
 		box-sizing: border-box;
 
-    svg {
-      width: 32px;
-      height: 32px;
-    }
+		ul {
+			width: 100%;
+		}
 
     > :not(:last-child) {
       margin-bottom: 24px;

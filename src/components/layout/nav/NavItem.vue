@@ -28,8 +28,8 @@ export default defineComponent({
 
 <style lang="scss">
 	.nav-item {
-		&:not(:last-child) {
-			margin-bottom: 24px;
-		}
+		height: 60px;
+		width: 100%;
+		display: flex;
 	}
 </style>
