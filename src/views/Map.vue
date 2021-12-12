@@ -24,7 +24,7 @@ export default defineComponent({
     ...mapState('session', [
       'currentUser'
     ]),
-    ...mapState([
+    ...mapState('map', [
       'map',
       'mapMarginLeft',
       'mapMarginTop'
@@ -43,7 +43,7 @@ export default defineComponent({
     window.removeEventListener('resize', this.reCenterDebounce)
   },
   methods: {
-    ...mapMutations([
+    ...mapMutations('map', [
       'setMap',
       'setMapMargins'
     ]),

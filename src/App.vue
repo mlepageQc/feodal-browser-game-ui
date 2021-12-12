@@ -30,7 +30,7 @@ export default defineComponent({
     this.setMapMarginsFromStorage()
   },
   methods: {
-    ...mapMutations([
+    ...mapMutations('map', [
       'setMapMargins'
     ]),
     setMapMarginsFromStorage (): void {

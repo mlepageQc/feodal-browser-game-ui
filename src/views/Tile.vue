@@ -9,7 +9,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState, mapMutations } from 'vuex'
+import { mapState } from 'vuex'
 
 import { TILE_SIZE } from '@/lib/map/config'
 
@@ -21,7 +21,7 @@ export default defineComponent({
     }
 	},
   computed: {
-    ...mapState([
+    ...mapState('map', [
       'map'
     ]),
     x (): number {
@@ -40,9 +40,6 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapMutations([
-      'setMapMargins'
-    ]),
     setMapSelectedTile () {
       this.map!.setSelectedTile(this.x * TILE_SIZE, this.y * TILE_SIZE)     
     }
