@@ -14,16 +14,16 @@ const session: Module<SessionState, State> = {
 		currentUser: null
 	},
 	mutations: {
-		setCurrentUser (state, currentUser) {
+		setCurrentUser (state, currentUser): void {
 			state.currentUser = currentUser
 		}
 	},
 	actions: {
-		async initialize ({ commit }) {
+		async initialize ({ commit }): Promise<void> {
 			const currentUser = (await fetchCurrentUser()).data
 			commit('setCurrentUser', currentUser)
 		},
-		async destroy ({ commit }) {
+		async destroy ({ commit }): Promise<void> {
 			await logout()
 			commit('setCurrentUser', null)
 		}

@@ -31,5 +31,11 @@ export default defineComponent({
 		height: 60px;
 		width: 100%;
 		display: flex;
+		align-items: center;
+		justify-content: center;
+
+		&:hover {
+			background: #ebebee;
+		}
 	}
 </style>

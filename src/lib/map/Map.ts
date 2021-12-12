@@ -6,6 +6,7 @@ import {
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import Minimap from './Minimap'
 import { MAP_SIZE, MINIMAP_SIZE, TILE_SIZE } from './config'
+import { debounce } from 'lodash'
 
 export default class Map {
 	private readonly _map: HTMLDivElement = document.createElement('div')
@@ -14,6 +15,7 @@ export default class Map {
 	private readonly _hoveredTile: HTMLDivElement = document.createElement('div')
 	private readonly _selectedTile: HTMLDivElement = document.createElement('div')
 	private readonly _minimap: Minimap
+	private readonly _onMapDragged: () => any
 	private _isDragging: boolean = false
 	private _initialClientX: number = 0
 	private _initialClientY: number = 0
@@ -25,6 +27,7 @@ export default class Map {
 		private readonly _mapBase64String: string,
 		minimapBase64String: string,
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
+		_onMapDragged: (marginLeft: number, marginTop: number) => any,
 		private _zoomLevel: ZoomLevel
 	) {
 		this._minimap = new Minimap(
@@ -32,6 +35,13 @@ export default class Map {
 			minimapBase64String,
 			this.onMinimapSelectionChange
 		)
+
+		this._onMapDragged = debounce(() => {
+			_onMapDragged(
+				this.playgroundAttribute('margin-left'),
+				this.playgroundAttribute('margin-top')
+			)
+		}, 100)
 
 		this.mount()
 		this.minimap.mount()
@@ -105,6 +115,10 @@ export default class Map {
 		return this._onTileSelected
 	}
 
+	private get onMapDragged (): () => any {
+		return this._onMapDragged
+	}
+
 	private get canvasContext (): CanvasRenderingContext2D {
 		return this.canvas.getContext('2d')!
 	}
@@ -169,6 +183,7 @@ export default class Map {
 			-marginLeft + this.containerWidth / 2 - TILE_SIZE / 2, 
 			-marginTop + this.containerHeight / 2 - TILE_SIZE / 2
 		)
+		this.setMapDimensions()
 	}
 
 	setMapDimensions (): void {
@@ -204,6 +219,7 @@ export default class Map {
 		}
 
 		this.translateMap(marginLeft, marginTop)
+		this.onMapDragged()
 		this.minimap.onMapDrag({ overflowRight, overflowBottom, marginLeft, marginTop })
 	}
 
@@ -264,6 +280,7 @@ export default class Map {
 		this.playground.addEventListener('mousemove', this.onMouseMove)
 		this.playground.addEventListener('mouseup', this.onMouseUp)
 		this.playground.addEventListener('mouseout', this.onMouseOut)
+		this.playground.addEventListener('transitionend', this.onMapDragged)
 	}
 
 	private onMouseDown = (event: MouseEvent): void => {

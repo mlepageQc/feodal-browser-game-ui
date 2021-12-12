@@ -13,35 +13,38 @@ import { defineComponent } from 'vue'
 import { debounce } from 'lodash'
 import { fetchMapBase64Image, fetchMinimapBase64Image } from '@/api/MapApi'
 import { mapState, mapMutations } from 'vuex'
+import { setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
 import { TILE_SIZE } from '@/lib/map/config'
+import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
 
 export default defineComponent({
-  mounted (): void {
-    this.initializeMap()
-  },
-  beforeRouteUpdate (to, _from, next) {
-    if (to.name === 'map') {
-      window.setTimeout(() => { 
-        this.map!.reCenter() 
-      }, 0)
-    }
-    next()
-  },
-  beforeUnmount () {
-    window.removeEventListener('resize', this.reCenterDebounce)
-  },
   computed: { 
     ...mapState('session', [
       'currentUser'
     ]),
     ...mapState([
-      'map'
+      'map',
+      'mapMarginLeft',
+      'mapMarginTop'
     ])
+  },
+  beforeRouteUpdate (to, _from, next) {
+    if (to.name === 'map') {
+      window.setTimeout(() => { this.map.reCenter() }, 0)
+    }
+    next()
+  },
+  mounted (): void {
+    this.initializeMap()   
+  },
+  beforeUnmount () {
+    window.removeEventListener('resize', this.reCenterDebounce)
   },
   methods: {
     ...mapMutations([
-      'setMap'
+      'setMap',
+      'setMapMargins'
     ]),
     async initializeMap (): Promise<void> {
       const base64Strings = await Promise.all([
@@ -53,20 +56,26 @@ export default defineComponent({
         this.$refs.mapContainer as HTMLDivElement,
         base64Strings[0].data,
         base64Strings[1].data,
-        this.onMapSelectionChange,
+        this.onMapSelectionChange,  
+        this.onMapDragged,
         0
       ))
 
       window.addEventListener('resize', this.reCenterDebounce)
+      this.map.dragMap(this.mapMarginLeft, this.mapMarginTop)
     },
     onMapSelectionChange ({ x, y }: CoordinatesSet): void {
       this.$router.push({ 
         name: 'tile', 
         query: { 
-          x: x / TILE_SIZE, 
+          x: x / TILE_SIZE,   
           y: y / TILE_SIZE 
         } 
       })
+    },
+    onMapDragged (marginLeft: number, marginTop: number): void {
+      setItem(MAP_MARGINS_ITEM, JSON.stringify({ marginLeft, marginTop }))
+      this.setMapMargins({ marginLeft, marginTop })
     },
     // eslint-disable-next-line no-unused-vars
     reCenterDebounce: debounce(function(this: any, _e: any) { 
@@ -88,7 +97,6 @@ export default defineComponent({
         overflow: hidden;
         flex-grow: 1;
         position: relative;
-        flex: 6
       }
     }
   }

@@ -2,8 +2,6 @@ import axios from 'axios'
 import router from '@/router'
 import { getItem, removeItem } from '@/lib/local-storage'
 
-console.log(process.env.VUE_APP_API_URL)
-
 const instance = axios.create({
 	baseURL: process.env.VUE_APP_API_URL,
   headers: {

@@ -16,14 +16,29 @@
 
 <script lang="ts">
 import { defineComponent  } from 'vue'
-import { mapState } from 'vuex'
-
+import { getItem } from '@/lib/local-storage'
+import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
+import { mapState, mapMutations } from 'vuex'
 
 export default defineComponent({
   computed: {
     ...mapState([
       'initialized'
     ])
+  },
+  created (): void {
+    this.setMapMarginsFromStorage()
+  },
+  methods: {
+    ...mapMutations([
+      'setMapMargins'
+    ]),
+    setMapMarginsFromStorage (): void {
+      const savedMapMargins = getItem(MAP_MARGINS_ITEM)
+      if (savedMapMargins) {
+        this.setMapMargins({ ...JSON.parse(savedMapMargins) })
+      }
+    }
   }
 })
 </script>
@@ -43,6 +58,15 @@ export default defineComponent({
     display: flex;
     flex-direction: column;
     height: 100%;
+  }
+  #app-spinner {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    background: grey;
   }
   #bottom {
     display: flex;

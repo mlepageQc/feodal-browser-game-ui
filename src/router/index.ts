@@ -57,13 +57,20 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-	if (from !== START_LOCATION && to.name !== 'login') return next()
-
 	if (getItem('jwt')) {
-		if (from === START_LOCATION) store.dispatch('initialize')
-		if (to.name === 'login') return next({ name: 'map' })
+		if (from === START_LOCATION) {
+			store.dispatch('initialize')
+		}
+		if (to.name === 'login') {
+			next({ name: 'map' })
+		} else {
+			next()
+		}
+	} else if (to.name !== 'login') {
+		next({ name: 'login' })
+	} else {
+		next()
 	}
-	next()
 })
 
 export default router
