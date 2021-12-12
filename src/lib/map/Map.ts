@@ -187,7 +187,6 @@ export default class Map {
 	}
 
 	setMapDimensions (): void {
-		this.map.style.width = this.containerWidth + 'px'
 		this.map.style.height = this.containerHeight + 'px'
 	}
 
@@ -373,5 +372,6 @@ export default class Map {
 
 		this.removePlaygroundTransition()
 		this.translateMap(marginLeft, marginTop)
+		this.onMapDragged()
 	}
 }

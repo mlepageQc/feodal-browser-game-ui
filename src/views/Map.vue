@@ -16,6 +16,7 @@ import { mapState, mapMutations } from 'vuex'
 import { setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
 import { TILE_SIZE } from '@/lib/map/config'
+import RouteNames from '@/config/RouteNames'
 import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
 
 export default defineComponent({
@@ -30,7 +31,7 @@ export default defineComponent({
     ])
   },
   beforeRouteUpdate (to, _from, next) {
-    if (to.name === 'map') {
+    if (to.name === RouteNames.Map) {
       window.setTimeout(() => { this.map.reCenter() }, 0)
     }
     next()
@@ -66,7 +67,7 @@ export default defineComponent({
     },
     onMapSelectionChange ({ x, y }: CoordinatesSet): void {
       this.$router.push({ 
-        name: 'tile', 
+        name: RouteNames.Tile, 
         query: { 
           x: x / TILE_SIZE,   
           y: y / TILE_SIZE 
@@ -92,12 +93,6 @@ export default defineComponent({
   .app-map {
     display: flex;
     flex-grow: 1;
-    .map {
-      &--container {
-        overflow: hidden;
-        flex-grow: 1;
-        position: relative;
-      }
-    }
+    min-width: 0;
   }
 </style>

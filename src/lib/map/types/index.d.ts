@@ -43,7 +43,3 @@ export {
 	MinimapSelectorChangeParams,
 	ZoomLevel
 }
-
-
-
-

@@ -36,7 +36,7 @@ export default defineComponent({
     setMapMarginsFromStorage (): void {
       const savedMapMargins = getItem(MAP_MARGINS_ITEM)
       if (savedMapMargins) {
-        this.setMapMargins({ ...JSON.parse(savedMapMargins) })
+        this.setMapMargins(JSON.parse(savedMapMargins))
       }
     }
   }
@@ -79,5 +79,6 @@ export default defineComponent({
   main {
     display: flex;
     flex-grow: 1;
+    min-width: 0;
   }
 </style>

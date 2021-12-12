@@ -2,8 +2,10 @@
 	&:hover {
 		cursor: pointer;
 	}
-	&--tile {
-		flex: 2; 
+	&--container {
+		overflow: hidden;
+		flex: 6;
+		position: relative;
 	}
 	&--playground {
 		position: relative;

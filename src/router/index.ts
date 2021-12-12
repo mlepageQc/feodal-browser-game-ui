@@ -7,6 +7,7 @@ import Map from '@/views/Map.vue'
 import Tile from '@/views/Tile.vue'
 import Spinner from '@/components/ui/Spinner.vue'
 import { getItem } from '@/lib/local-storage'
+import RouteNames from '@/config/RouteNames'
 import store from '@/store'
 
 const BASE_LAYOUT = {
@@ -20,27 +21,27 @@ const router = createRouter({
 	routes: [
 		{
 			path: '/',
-			name: 'root',
-			redirect: { name: 'login' }
+			name: RouteNames.Root,
+			redirect: { name: RouteNames.Login }
 		},
 		{
 			path: '/login',
-			name: 'login',
+			name: RouteNames.Login,
 			component: Login
 		},
 		{
 			path: '/signup',
-			name: 'signup',
+			name: RouteNames.Signup,
 			component: Signup
 		},
 		{ 
 			path: '/map', 
-			name: 'map',
+			name: RouteNames.Map,
 			components: { default: Map, ...BASE_LAYOUT },
 			children: [
 				{
 					path: 'tile', 
-					name: 'tile',
+					name: RouteNames.Tile,
 					component: Tile,
 					props: (to) => {
 						return {
@@ -61,13 +62,13 @@ router.beforeEach((to, from, next) => {
 		if (from === START_LOCATION) {
 			store.dispatch('initialize')
 		}
-		if (to.name === 'login') {
-			next({ name: 'map' })
+		if (to.name === RouteNames.Login) {
+			next({ name: RouteNames.Map })
 		} else {
 			next()
 		}
-	} else if (to.name !== 'login') {
-		next({ name: 'login' })
+	} else if (to.name !== RouteNames.Login && to.name !== RouteNames.Signup) {
+		next({ name: RouteNames.Login })
 	} else {
 		next()
 	}
