@@ -10,16 +10,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { RouteLocation } from 'vue-router'
-import { TranslateResult } from 'vue-i18n'
 
 export default defineComponent({
 	props: {
 		to: {
 			type: Object as () => RouteLocation,
-			required: true
-		},
-		tooltip: {
-			type: String as () => string | TranslateResult,
 			required: true
 		}
 	}

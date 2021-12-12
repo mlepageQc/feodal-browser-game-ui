@@ -1,4 +1,5 @@
 import { createRouter, createWebHashHistory, START_LOCATION } from 'vue-router'
+import Characters from '@/views/Characters.vue'
 import Login from '@/views/Login.vue'
 import Signup from '@/views/Signup.vue'
 import Header from '@/components/layout/Header.vue'
@@ -53,6 +54,11 @@ const router = createRouter({
 					}
 				}
 			]
+		},
+		{
+			path: '/characters',
+			name: RouteNames.Characters,
+			components: { default: Characters, ...BASE_LAYOUT },
 		}
 	]
 })

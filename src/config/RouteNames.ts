@@ -3,7 +3,8 @@ enum RouteNames {
 	Login = 'login',
 	Signup = 'signup',
 	Map = 'map',
-	Tile = 'tile'
+	Tile = 'tile',
+	Characters = 'characters'
 }
 
 export default RouteNames

@@ -1,13 +1,11 @@
 <template>
   <Nav>
     <NavItem 
-      :to="{ name: 'map' }" 
-      tooltip="Some tooltip">
+      :to="mapRoute">
       <MapIcon />
     </NavItem>
     <NavItem 
-      :to="{ name: 'map' }" 
-      tooltip="Some tooltip">
+      :to="charactersRoute">
       <ShieldIcon />
     </NavItem>
   </Nav>
@@ -19,6 +17,7 @@ import MapIcon from '@/assets/svgs/map.svg'
 import ShieldIcon from '@/assets/svgs/shield.svg'
 import Nav from './Nav.vue'
 import NavItem from './NavItem.vue'
+import RouteNames from '@/config/RouteNames'
 
 export default defineComponent({
   components: { 
@@ -26,6 +25,14 @@ export default defineComponent({
     NavItem, 
     MapIcon,
     ShieldIcon 
+  },
+  computed: {
+    mapRoute () {
+      return { name: RouteNames.Map }
+    },
+    charactersRoute () {
+      return { name: RouteNames.Characters }
+    }
   }
 })
 </script>
