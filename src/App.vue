@@ -17,7 +17,7 @@
 <script lang="ts">
 import { defineComponent  } from 'vue'
 import { getItem } from '@/lib/local-storage'
-import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
+import { MAP_MARGINS_ITEM, MAP_ZOOM_LEVEL } from '@/config/LocalStorageConfig'
 import { mapState, mapMutations } from 'vuex'
 
 export default defineComponent({
@@ -27,16 +27,22 @@ export default defineComponent({
     ])
   },
   created (): void {
-    this.setMapMarginsFromStorage()
+    this.setMapAttributesFromStorage()
   },
   methods: {
     ...mapMutations('map', [
-      'setMapMargins'
+      'setMapMargins',
+      'setMapZoomLevel'
     ]),
-    setMapMarginsFromStorage (): void {
+    setMapAttributesFromStorage (): void {
       const savedMapMargins = getItem(MAP_MARGINS_ITEM)
       if (savedMapMargins) {
         this.setMapMargins(JSON.parse(savedMapMargins))
+      }
+
+      const savedZoomLevel = getItem(MAP_ZOOM_LEVEL)
+      if (savedZoomLevel) {
+        this.setMapZoomLevel(parseInt(savedZoomLevel))
       }
     }
   }

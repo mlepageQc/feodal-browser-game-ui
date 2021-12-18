@@ -1,7 +1,6 @@
 import { 
 	CoordinatesSet,
-	MinimapSelectorChangeParams,
-	ZoomLevel 
+	MinimapSelectorChangeParams 
 } from './types'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import Minimap from './Minimap'
@@ -14,7 +13,7 @@ export default class Map {
 	private readonly _canvas: HTMLCanvasElement = document.createElement('canvas')
 	private readonly _hoveredTile: HTMLDivElement = document.createElement('div')
 	private readonly _selectedTile: HTMLDivElement = document.createElement('div')
-	private readonly _minimap: Minimap
+	private readonly _minimap: Minimap | null = null
 	private readonly _onMapDragged: () => any
 	private _isDragging: boolean = false
 	private _initialClientX: number = 0
@@ -28,13 +27,13 @@ export default class Map {
 		minimapBase64String: string,
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
 		_onMapDragged: (marginLeft: number, marginTop: number) => any,
-		private _zoomLevel: ZoomLevel
+		private readonly _mapSize: number
 	) {
-		this._minimap = new Minimap(
-			_container,
-			minimapBase64String,
-			this.onMinimapSelectionChange
-		)
+		// this._minimap = new Minimap(
+		// 	_container,
+		// 	minimapBase64String,
+		// 	this.onMinimapSelectionChange
+		// )
 
 		this._onMapDragged = debounce(() => {
 			_onMapDragged(
@@ -44,7 +43,7 @@ export default class Map {
 		}, 100)
 
 		this.mount()
-		this.minimap.mount()
+		// this.minimap.mount()
 	}
 
 	private get mapBase64String (): string {
@@ -87,9 +86,13 @@ export default class Map {
 		return this._canvas
 	}
 
-	private get minimap (): Minimap {
-		return this._minimap
+	private get mapSize (): number {
+		return this._mapSize
 	}
+
+	// private get minimap (): Minimap {
+	// 	return this._minimap
+	// }
 
 	private get hoveredTile (): HTMLDivElement {
 		return this._hoveredTile
@@ -105,10 +108,6 @@ export default class Map {
 
 	private get containerHeight (): number {
 		return getRoundedAttributeValueFromElement(this.container, 'height')
-	}
-
-	private get zoomLevel (): ZoomLevel {
-		return this._zoomLevel
 	}
 
 	private get onTileSelected (): (coordinates: CoordinatesSet) => any {
@@ -151,7 +150,24 @@ export default class Map {
 		this._initialMarginTop = value
 	}
 
+	// private renderImage (): Promise<void> {
+	// 	return new Promise((resolve, _reject) => {
+	// 		const image = new window.Image()
+	// 		image.onload = () => {
+	// 			this.canvasContext.drawImage(image, 0, 0)
+	// 			resolve()
+	// 		}
+	// 		image.src = `data:image/png;base64,${this.mapBase64String}`
+	// 	})
+	// }
+
 	async mount (): Promise<void> {
+		this.adjustMapHeightToContainer()
+		this.playground.style.width = this.mapSize + 'px'
+		this.playground.style.height = this.mapSize + 'px'
+		this.canvas.width = this.mapSize
+		this.canvas.height = this.mapSize
+
 		await this.renderImage()
 
 		this.playground.appendChild(this.hoveredTile)
@@ -174,7 +190,7 @@ export default class Map {
 	}
 
 	setSelectedTile (marginLeft: number, marginTop: number): void {
-		this.minimap.setupSelector()
+		// this.minimap.setupSelector()
 		
 		this.selectedTile.style.left = `${marginLeft}px`
 		this.selectedTile.style.top = `${marginTop}px`
@@ -183,15 +199,15 @@ export default class Map {
 			-marginLeft + this.containerWidth / 2 - TILE_SIZE / 2, 
 			-marginTop + this.containerHeight / 2 - TILE_SIZE / 2
 		)
-		this.setMapDimensions()
+		this.adjustMapHeightToContainer()
 	}
 
-	setMapDimensions (): void {
+	adjustMapHeightToContainer (): void {
 		this.map.style.height = this.containerHeight + 'px'
 	}
 
 	reCenter (): void {
-		this.minimap.setupSelector()
+		// this.minimap.setupSelector()
 
     this.dragMap(
 			this.playgroundAttribute('margin-left'),
@@ -219,7 +235,7 @@ export default class Map {
 
 		this.translateMap(marginLeft, marginTop)
 		this.onMapDragged()
-		this.minimap.onMapDrag({ overflowRight, overflowBottom, marginLeft, marginTop })
+		// this.minimap.onMapDrag({ overflowRight, overflowBottom, marginLeft, marginTop })
 	}
 
 	private addPlaygroundTransition (): void {
@@ -262,7 +278,7 @@ export default class Map {
 		return new Promise((resolve, _reject) => {
 			const image = new window.Image()
 			image.onload = () => {
-				this.setMapDimensions()
+				this.adjustMapHeightToContainer()
 				this.playground.style.width = image.width + 'px'
 				this.playground.style.height = image.height + 'px'
 				this.canvas.width = image.width
@@ -289,7 +305,7 @@ export default class Map {
 		this.initialClientY = event.clientY
 		this.initialMarginLeft = this.playgroundAttribute('margin-left')
 		this.initialMarginTop = this.playgroundAttribute('margin-top')
-		this.minimap.minimap.classList.add('minimap_no-events')
+		// this.minimap.minimap.classList.add('minimap_no-events')
 		event.preventDefault()
 	}
 
@@ -298,7 +314,7 @@ export default class Map {
 	}
 
 	private onMouseMove = (event: MouseEvent): boolean | void => {
-		if (this.minimap.isDragging) return false
+		// if (this.minimap.isDragging) return false
 
 		this.hoverTile(event)
 		if (!this.isDragging) return false
@@ -311,13 +327,13 @@ export default class Map {
 
 	private onMouseUp = (event: MouseEvent): void => {
 		this.stopDrag()	
-		this.minimap.isDragging = false
+		// this.minimap.isDragging = false
 		// We give a range in which the dragging will select the tile
 		// This is to prevent unconsistent selection behavior
 		const movedX = Math.abs(this.dragStartX - (event.clientX - this.initialMarginLeft)) <= 3
 		const movedY = Math.abs(this.dragStartY - (event.clientY - this.initialMarginTop)) <= 3
 
-		this.minimap.minimap.classList.remove('minimap_no-events')
+		// this.minimap.minimap.classList.remove('minimap_no-events')
 		
 		if (movedX || movedY) this.selectTile(event)
 	}

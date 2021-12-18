@@ -16,6 +16,6 @@ export function fetchTileInformation (coordinates: CoordinatesSet) {
 	return axios('/tiles', { params: { coordinates } })
 }
 
-export function fetchMinimapBase64Image () {
-	return axios('/minimap')
+export function fetchMinimapBase64Image (zoomLevel: ZoomLevel) {
+	return axios('/minimap', { params: { zoomLevel } })
 }
