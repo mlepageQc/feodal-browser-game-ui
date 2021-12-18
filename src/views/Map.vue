@@ -13,11 +13,12 @@ import { defineComponent } from 'vue'
 import { debounce } from 'lodash'
 import { fetchMapBase64Image, fetchMinimapBase64Image } from '@/api/MapApi'
 import { mapState, mapMutations } from 'vuex'
-import { setItem } from '@/lib/local-storage'
+import { getItem, setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
+import { MAP_SIZE } from '@/config/Map'
 import { TILE_SIZE } from '@/lib/map/config'
 import RouteNames from '@/config/RouteNames'
-import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
+import { MAP_MARGINS_ITEM, MAP_ZOOM_LEVEL } from '@/config/LocalStorageConfig'
 
 export default defineComponent({
   computed: { 
@@ -48,9 +49,12 @@ export default defineComponent({
       'setMapMargins'
     ]),
     async initializeMap (): Promise<void> {
+      let zoomLevelItem = getItem(MAP_ZOOM_LEVEL)
+      const zoomLevel = zoomLevelItem ? parseInt(zoomLevelItem) : 0
+
       const base64Strings = await Promise.all([
-        fetchMapBase64Image(0),
-        fetchMinimapBase64Image()
+        fetchMapBase64Image(zoomLevel),
+        fetchMinimapBase64Image(zoomLevel)
       ])
 
       this.setMap(new Map(
@@ -59,7 +63,7 @@ export default defineComponent({
         base64Strings[1].data,
         this.onMapSelectionChange,  
         this.onMapDragged,
-        0
+        zoomLevel * MAP_SIZE
       ))
 
       window.addEventListener('resize', this.reCenterDebounce)
