@@ -1,44 +1,29 @@
-interface CoordinatesSet {
+export interface CoordinatesSet {
 	x: number
 	y: number
 }
 
-interface MapSelectionChangeParams {
+export interface MapSelectionChangeParams {
 	overflowRight: boolean
 	overflowBottom: boolean
 	marginLeft: number
 	marginTop: number
 }
 
-enum MapSize {
-	Xlarge = 32768,
-	Large = 16384,
-	Medium = 8192,
-	Small = 4096,
-	Xsmall = 2048
-}
-
-interface MinimapSelectorChangeParams {
+export interface MinimapSelectorChangeParams {
 	overflowRight: boolean
 	overflowBottom: boolean
 	newSelectorX: number
 	newSelectorY: number
 }
 
-type MinimapSelectionChange = (params: MinimapSelectorChangeParams) => any
+export type MinimapSelectionChange = (params: MinimapSelectorChangeParams) => any
 
-enum ZoomLevel {
+export enum ZoomLevel {
 	ZoomLevel0 = 0,
 	ZoomLevel1 = 1,
 	ZoomLevel2 = 2,
 	ZoomLevel3 = 3
 }
 
-export {
-	CoordinatesSet,
-	MapSelectionChangeParams,
-	MapSize,
-	MinimapSelectionChange,
-	MinimapSelectorChangeParams,
-	ZoomLevel
-}
+export type MapImageParams = CoordinatesSet & { data: string }
