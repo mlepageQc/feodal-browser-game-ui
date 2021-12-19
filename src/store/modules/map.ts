@@ -1,8 +1,8 @@
 import { Module } from 'vuex'
 import { State } from '@/store'
 import Map from '@/lib/map/Map'
-import { TILE_SIZE } from '@/lib/map/config'
-import { CoordinatesSet, ZoomLevel } from '@/lib/map/types'
+import { MAP_SIZE } from '@/config/Map'
+import { ZoomLevel } from '@/lib/map/types'
 import { ImageParams } from '@/types/ImageParams'
 
 interface MapState {
@@ -10,6 +10,7 @@ interface MapState {
   mapMarginLeft: number
   mapMarginTop: number
 	zoomLevel: ZoomLevel
+	fetchedImagesData: ImageParams[]
 }
 
 interface MapMargins {
@@ -23,7 +24,8 @@ const map: Module<MapState, State> = {
 		map: null,
 		mapMarginLeft: 0,
 		mapMarginTop: 0,
-		zoomLevel: 0
+		zoomLevel: 0,
+		fetchedImagesData: [] // Caching fetched images, mechanism to clear cache will come eventually
 	},
 	mutations: {
 		setMapMargins (state, { marginLeft, marginTop }: MapMargins): void {
@@ -35,42 +37,14 @@ const map: Module<MapState, State> = {
     },
 		setMapZoomLevel (state, zoomLevel: MapState['zoomLevel']): void {
 			state.zoomLevel = zoomLevel
+		},
+		addFetchedImagesData (state, imagesParams: ImageParams) {
+			state.fetchedImagesData = state.fetchedImagesData.concat(imagesParams)
 		}
 	},
 	getters: {
-		// Fetching parameters for images
-		imageParams (state): ImageParams {
-			const imageParams: ImageParams = {
-				zoomLevel: state.zoomLevel,
-				coordinateSets: []
-			}
-			const imageX = state.mapMarginLeft * state.zoomLevel / TILE_SIZE
-			const imageY = Math.abs(state.mapMarginTop * state.zoomLevel / TILE_SIZE)
-
-			// Current tile according to top left coordinates
-			imageParams.coordinateSets.push({
-				x: imageX,
-				y: imageY
-			})
-			
-			// TODO code those conditions
-			const fetchTopLeftImage = false
-
-			const fetchTopImage = false
-
-			const fetchTopRightImage = false
-
-			const fetchLeftImage = false
-
-			const fetchBottomLeftImage = false
-
-			const fetchBottomImage = false
-
-			const fetchBottomRightImage = false
-
-			const fetchRightImage = false
-
-			return imageParams
+		mapSize (state): number {
+			return (state.zoomLevel + 1) * MAP_SIZE
 		}
 	}
 }

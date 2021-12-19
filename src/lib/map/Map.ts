@@ -1,6 +1,7 @@
 import { 
 	CoordinatesSet,
-	MinimapSelectorChangeParams 
+	MinimapSelectorChangeParams,
+	MapImageParams
 } from './types'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import Minimap from './Minimap'
@@ -23,15 +24,15 @@ export default class Map {
 
 	constructor(
 		private readonly _container: HTMLDivElement,
-		private readonly _mapBase64String: string,
-		minimapBase64String: string,
+		private _mapImagesParams: MapImageParams[],
+		// minimapImagesParams: string,
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
 		_onMapDragged: (marginLeft: number, marginTop: number) => any,
 		private readonly _mapSize: number
 	) {
 		// this._minimap = new Minimap(
 		// 	_container,
-		// 	minimapBase64String,
+		// 	minimapImagesParams,
 		// 	this.onMinimapSelectionChange
 		// )
 
@@ -46,8 +47,8 @@ export default class Map {
 		// this.minimap.mount()
 	}
 
-	private get mapBase64String (): string {
-		return this._mapBase64String
+	private get mapImagesParams (): MapImageParams[] {
+		return this._mapImagesParams
 	}
 
 	private get isDragging (): boolean {
@@ -150,25 +151,16 @@ export default class Map {
 		this._initialMarginTop = value
 	}
 
-	// private renderImage (): Promise<void> {
-	// 	return new Promise((resolve, _reject) => {
-	// 		const image = new window.Image()
-	// 		image.onload = () => {
-	// 			this.canvasContext.drawImage(image, 0, 0)
-	// 			resolve()
-	// 		}
-	// 		image.src = `data:image/png;base64,${this.mapBase64String}`
-	// 	})
-	// }
+	private set mapImagesParams (params: MapImageParams[]) {
+		this._mapImagesParams = params
+	}
 
 	async mount (): Promise<void> {
-		this.adjustMapHeightToContainer()
-		this.playground.style.width = this.mapSize + 'px'
-		this.playground.style.height = this.mapSize + 'px'
-		this.canvas.width = this.mapSize
-		this.canvas.height = this.mapSize
-
-		await this.renderImage()
+		await Promise.all(
+			this.mapImagesParams.map(imageParams => {
+				this.renderImage(imageParams)
+			})
+		)
 
 		this.playground.appendChild(this.hoveredTile)
 		this.playground.appendChild(this.selectedTile)
@@ -180,11 +172,31 @@ export default class Map {
 		this.setupSelectedTileAndAppendToPlayground()
 		this.appendCanvasToPlayground()
 		this.attachPlaygroundEventListeners()
+		this.adjustMapHeightToContainer()
+
+		this.playground.style.width = this.mapSize + 'px'
+		this.playground.style.height = this.mapSize + 'px'
+		this.canvas.width = this.mapSize
+		this.canvas.height = this.mapSize
 
 		document.addEventListener('mouseleave', this.stopDrag)
 	}
 
+	renderImage (imageParams: MapImageParams): Promise<void> {
+		console.log(imageParams)
+
+		return new Promise((resolve, _reject) => {
+			const image = new window.Image()
+			image.onload = () => {
+				this.canvasContext.drawImage(image, imageParams.x, imageParams.y)
+				resolve()
+			}
+			image.src = `data:image/png;base64,${imageParams.data}`
+		})
+	}
+
 	stopDrag = (): void => {
+		console.log('stop dragging')
 		this.isDragging = false
 		this.addPlaygroundTransition()
 	}
@@ -254,6 +266,7 @@ export default class Map {
 	private setupPlaygroundAndAppendToMap (): void {
 		this.playground.className = 'map--playground'
 		this.map.appendChild(this.playground)
+		this.map.addEventListener('mouseleave', () => this.stopDrag())
 	}
 
 	private setupHoveredTileAndAppendToPlayground (): void {
@@ -272,22 +285,6 @@ export default class Map {
 
 	private appendCanvasToPlayground (): void {
 		this.playground.appendChild(this.canvas)
-	}
-
-	private renderImage (): Promise<void> {
-		return new Promise((resolve, _reject) => {
-			const image = new window.Image()
-			image.onload = () => {
-				this.adjustMapHeightToContainer()
-				this.playground.style.width = image.width + 'px'
-				this.playground.style.height = image.height + 'px'
-				this.canvas.width = image.width
-				this.canvas.height = image.height
-				this.canvasContext.drawImage(image, 0, 0)
-				resolve()
-			}
-			image.src = `data:image/png;base64,${this.mapBase64String}`
-		})
 	}
 
 	private attachPlaygroundEventListeners (): void {

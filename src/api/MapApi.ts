@@ -3,9 +3,10 @@ import {
 	CoordinatesSet, 
 	ZoomLevel 
 } from '@/lib/map/types'
+import { ImageParams } from '@/types/ImageParams'
 
-export function fetchMapBase64Image (zoomLevel: ZoomLevel) {
-	return axios('/map', { params: { zoomLevel } })
+export function fetchMapBase64Image (params: ImageParams) {
+	return axios('/map', { params })
 }
 
 export function fetchBuildingsBase64Image () {
