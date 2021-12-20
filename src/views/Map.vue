@@ -12,7 +12,7 @@ import { CoordinatesSet, ImageData, ImageParams } from '@/lib/map/types'
 import { defineComponent } from 'vue'
 import { debounce } from 'lodash'
 import { fetchMapBase64Image } from '@/api/MapApi'
-import { mapState, mapMutations, mapGetters } from 'vuex'
+import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
 import RouteNames from '@/config/RouteNames'
@@ -47,6 +47,7 @@ export default defineComponent({
   },
   beforeUnmount () {
     window.removeEventListener('resize', this.reCenterDebounce)
+    this.destroyMap()
   },
   methods: {
     ...mapMutations('map', [
@@ -54,6 +55,9 @@ export default defineComponent({
       'setMapMargins',
       'addFetchedImagesData'
     ]),
+    ...mapActions('map', {
+      destroyMap: 'destroy'
+    }),
     async initializeMap (): Promise<void> {
       const map = new Map(
         this.$refs.mapContainer as HTMLDivElement,
@@ -88,7 +92,6 @@ export default defineComponent({
     // Retrieves needed images parameters, fetches the images, adds them to store caching and returns them
     async updateMapImages (): Promise<ImageData[]> {
       const imagesParams = this.buildImagesFetchingParams()
-      console.log(imagesParams)
       const imagesResponse = await Promise.all<AxiosResponse<ImageData>>(
         imagesParams.map((params: ImageParams) => fetchMapBase64Image(params))
       )
@@ -97,7 +100,6 @@ export default defineComponent({
       return imagesData
     },
     buildImagesFetchingParams (): ImageParams[] {
-      console.log('tabarnaque', this.startingImageX(), this.endingImageX())
       const imageParams = []
       // Adding every image params that will fill the screen
       for (let i = this.startingImageX(); i <= this.endingImageX() && i < this.mapSize; i += MAP_IMAGE_SIZE) {
