@@ -1,7 +1,8 @@
 import { 
 	CoordinatesSet,
 	MinimapSelectorChangeParams,
-	MapImageParams
+	ImageData,
+	ImageParams
 } from './types'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import Minimap from './Minimap'
@@ -16,6 +17,7 @@ export default class Map {
 	private readonly _selectedTile: HTMLDivElement = document.createElement('div')
 	private readonly _minimap: Minimap | null = null
 	private readonly _onMapDragged: () => any
+	private _imagesData: ImageData[] = []
 	private _isDragging: boolean = false
 	private _initialClientX: number = 0
 	private _initialClientY: number = 0
@@ -24,15 +26,15 @@ export default class Map {
 
 	constructor(
 		private readonly _container: HTMLDivElement,
-		private _mapImagesParams: MapImageParams[],
-		// minimapImagesParams: string,
+		// private _imagesData: ImageData[],
+		// miniimagesData: string,
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
 		_onMapDragged: (marginLeft: number, marginTop: number) => any,
 		private readonly _mapSize: number
 	) {
 		// this._minimap = new Minimap(
 		// 	_container,
-		// 	minimapImagesParams,
+		// 	miniimagesData,
 		// 	this.onMinimapSelectionChange
 		// )
 
@@ -43,13 +45,13 @@ export default class Map {
 			)
 		}, 100)
 
-		this.mount()
+	//	this.mount()
 		// this.minimap.mount()
 	}
 
-	private get mapImagesParams (): MapImageParams[] {
-		return this._mapImagesParams
-	}
+	// private get imagesData (): ImageData[] {
+	// 	return this._imagesData
+	// }
 
 	private get isDragging (): boolean {
 		return this._isDragging
@@ -151,16 +153,12 @@ export default class Map {
 		this._initialMarginTop = value
 	}
 
-	private set mapImagesParams (params: MapImageParams[]) {
-		this._mapImagesParams = params
+	private set imagesData (params: ImageData[]) {
+		this._imagesData = params
 	}
 
 	async mount (): Promise<void> {
-		await Promise.all(
-			this.mapImagesParams.map(imageParams => {
-				this.renderImage(imageParams)
-			})
-		)
+		//  await this.drawImages(this.imagesData)
 
 		this.playground.appendChild(this.hoveredTile)
 		this.playground.appendChild(this.selectedTile)
@@ -182,21 +180,24 @@ export default class Map {
 		document.addEventListener('mouseleave', this.stopDrag)
 	}
 
-	renderImage (imageParams: MapImageParams): Promise<void> {
-		console.log(imageParams)
+	drawImages (imagesData: ImageData[]): Promise<void[]> {
+		return Promise.all(
+			imagesData.map(params => this.drawImage(params))
+		)
+	}
 
+	drawImage (imageData: ImageData): Promise<void> {
 		return new Promise((resolve, _reject) => {
 			const image = new window.Image()
 			image.onload = () => {
-				this.canvasContext.drawImage(image, imageParams.x, imageParams.y)
+				this.canvasContext.drawImage(image, imageData.x, imageData.y)
 				resolve()
 			}
-			image.src = `data:image/png;base64,${imageParams.data}`
+			image.src = `data:image/png;base64,${imageData.data}`
 		})
 	}
 
 	stopDrag = (): void => {
-		console.log('stop dragging')
 		this.isDragging = false
 		this.addPlaygroundTransition()
 	}

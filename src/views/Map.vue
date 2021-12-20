@@ -8,13 +8,12 @@
 </template>
 
 <script lang="ts">
-import { CoordinatesSet, MapImageParams } from '@/lib/map/types'
+import { CoordinatesSet, ImageData, ImageParams } from '@/lib/map/types'
 import { defineComponent } from 'vue'
 import { debounce } from 'lodash'
 import { fetchMapBase64Image } from '@/api/MapApi'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import { setItem } from '@/lib/local-storage'
-import { ImageParams } from '@/types/ImageParams'
 import Map from '@/lib/map/Map'
 import { TILE_SIZE } from '@/lib/map/config'
 import RouteNames from '@/config/RouteNames'
@@ -57,27 +56,21 @@ export default defineComponent({
       'addFetchedImagesData'
     ]),
     async initializeMap (): Promise<void> {
-      const imagesParams = this.buildImagesFetchingParams()
-
-      const mapImagesResponse = await Promise.all<AxiosResponse<MapImageParams>>(
-        imagesParams.map((params: ImageParams) => fetchMapBase64Image(params))
-      )
-
-      const mapImagesData = mapImagesResponse.map(response => response.data)
-
-      this.addFetchedImagesData(mapImagesData)
-
-      this.setMap(new Map(
+      const map = new Map(
         this.$refs.mapContainer as HTMLDivElement,
-        mapImagesData,
         this.onMapSelectionChange,  
         this.onMapDragged,
         this.mapSize
-      ))
-
-      // // window.addEventListener('resize', this.reCenterDebounce)
-      // this.map.dragMap(this.mapMarginLeft, this.mapMarginTop)
+      )
+      this.setMap(map)
+      this.map.drawImages(await this.updateMapImages())
+      this.map.mount()
+      this.map.translateMap(this.mapMarginLeft, this.mapMarginTop)
     },
+    // eslint-disable-next-line no-unused-vars
+    reCenterDebounce: debounce(function(this: any, _e: any) { 
+      this.map.reCenter()
+    }, 200),
     onMapSelectionChange ({ x, y }: CoordinatesSet): void {
       this.$router.push({ 
         name: RouteNames.Tile, 
@@ -90,28 +83,38 @@ export default defineComponent({
     async onMapDragged (marginLeft: number, marginTop: number): Promise<void> {
       setItem(MAP_MARGINS_ITEM, JSON.stringify({ marginLeft, marginTop }))
       this.setMapMargins({ marginLeft, marginTop })
-
+      this.map.drawImages(await this.updateMapImages())
+    },
+    // Retrieves needed images parameters, fetches the images, adds them to store caching and returns them
+    async updateMapImages (): Promise<ImageData[]> {
       const imagesParams = this.buildImagesFetchingParams()
-
-      const mapImagesResponse = await Promise.all<AxiosResponse<MapImageParams>>(
+      const imagesResponse = await Promise.all<AxiosResponse<ImageData>>(
         imagesParams.map((params: ImageParams) => fetchMapBase64Image(params))
       )
-
-      const mapImagesData = mapImagesResponse.map(response => response.data)
-
-      this.addFetchedImagesData(mapImagesData)
-
-      mapImagesData.forEach(imageData => {
-        this.map.renderImage(imageData)
-      })
-
-      this.map.mapImagesParams = this.fetchedImagesData
-      this.map.mount()
+      const imagesData = imagesResponse.map(response => response.data)
+      this.addFetchedImagesData(imagesData)
+      return imagesData
     },
-    // eslint-disable-next-line no-unused-vars
-    reCenterDebounce: debounce(function(this: any, _e: any) { 
-      this.map.reCenter()
-    }, 200),
+    buildImagesFetchingParams (): ImageParams[] {
+      const imageParams = []
+      // Adding every image params that will fill the screen
+      for (let i = this.startingImageX(); i <= this.endingImageX() && i < this.mapSize; i += MAP_IMAGE_SIZE) {
+        for(let j = this.startingImageY(); j <= this.endingImageY() && j < this.mapSize; j += MAP_IMAGE_SIZE) {
+          // Not adding params if they are already cached
+          const alreadyFetched = (this.fetchedImagesData as ImageParams[]).find(fetchedParams => {
+            return fetchedParams.x === i && fetchedParams.y === j
+          })
+          if (!alreadyFetched) {
+            imageParams.push({
+              x: i,
+              y: j,
+              zoomLevel: this.zoomLevel
+            })
+          }       
+        }
+      }
+      return imageParams
+    },
     startingImageX (): number {
       return Math.floor(Math.abs(this.mapMarginLeft) / MAP_IMAGE_SIZE) * MAP_IMAGE_SIZE
     },
@@ -127,27 +130,6 @@ export default defineComponent({
       return Math.floor(
         (Math.abs(this.mapMarginTop) + (this.$refs.mapContainer as HTMLDivElement).offsetHeight) / MAP_IMAGE_SIZE
       ) * MAP_IMAGE_SIZE
-    },
-    buildImagesFetchingParams (): ImageParams[] {
-      const imageParams = []
-      // Adding every image params that will fill the screen
-      for (let i = this.startingImageX(); i <= this.endingImageX(); i += MAP_IMAGE_SIZE) {
-        for(let j = this.startingImageY(); j <= this.endingImageY(); j += MAP_IMAGE_SIZE) {
-          // Not adding params if they are already cached
-          const alreadyFetched = (this.fetchedImagesData as ImageParams[]).find(fetchedParams => {
-            return fetchedParams.x === i && fetchedParams.y === j
-          })
-          if (!alreadyFetched) {
-            imageParams.push({
-              x: i,
-              y: j,
-              zoomLevel: this.zoomLevel
-            })
-          }       
-        }
-      }
-
-      return imageParams
     }
   }
 })
