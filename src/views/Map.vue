@@ -15,11 +15,10 @@ import { fetchMapBase64Image } from '@/api/MapApi'
 import { mapState, mapMutations, mapGetters } from 'vuex'
 import { setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
-import { TILE_SIZE } from '@/lib/map/config'
 import RouteNames from '@/config/RouteNames'
 import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
 import { AxiosResponse } from 'axios'
-import { MAP_IMAGE_SIZE } from '@/config/Map'
+import { MAP_IMAGE_SIZE, TILE_SIZE } from '@/config/Map'
 
 export default defineComponent({
   computed: { 
@@ -60,12 +59,13 @@ export default defineComponent({
         this.$refs.mapContainer as HTMLDivElement,
         this.onMapSelectionChange,  
         this.onMapDragged,
-        this.mapSize
+        this.mapSize,
+        TILE_SIZE
       )
       this.setMap(map)
       this.map.drawImages(await this.updateMapImages())
       this.map.mount()
-      this.map.translateMap(this.mapMarginLeft, this.mapMarginTop)
+      this.map.translateMap(this.mapMarginLeft, this.mapMarginTop) // Moving to cached coordinates
     },
     // eslint-disable-next-line no-unused-vars
     reCenterDebounce: debounce(function(this: any, _e: any) { 
