@@ -67,13 +67,15 @@ export default defineComponent({
         TILE_SIZE
       )
       this.setMap(map)
+      window.addEventListener('resize', this.reCenterDebounce)
       this.map.drawImages(await this.updateMapImages())
       this.map.mount()
       this.map.translateMap(this.mapMarginLeft, this.mapMarginTop) // Moving to cached coordinates
     },
     // eslint-disable-next-line no-unused-vars
-    reCenterDebounce: debounce(function(this: any, _e: any) { 
+    reCenterDebounce: debounce(async function(this: any, _e: any) { 
       this.map.reCenter()
+      this.map.drawImages(await this.updateMapImages())
     }, 200),
     onMapSelectionChange ({ x, y }: CoordinatesSet): void {
       this.$router.push({ 
