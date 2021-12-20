@@ -88,6 +88,7 @@ export default defineComponent({
     // Retrieves needed images parameters, fetches the images, adds them to store caching and returns them
     async updateMapImages (): Promise<ImageData[]> {
       const imagesParams = this.buildImagesFetchingParams()
+      console.log(imagesParams)
       const imagesResponse = await Promise.all<AxiosResponse<ImageData>>(
         imagesParams.map((params: ImageParams) => fetchMapBase64Image(params))
       )
@@ -96,6 +97,7 @@ export default defineComponent({
       return imagesData
     },
     buildImagesFetchingParams (): ImageParams[] {
+      console.log('tabarnaque', this.startingImageX(), this.endingImageX())
       const imageParams = []
       // Adding every image params that will fill the screen
       for (let i = this.startingImageX(); i <= this.endingImageX() && i < this.mapSize; i += MAP_IMAGE_SIZE) {

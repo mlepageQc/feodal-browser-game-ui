@@ -40,6 +40,15 @@ const map: Module<MapState, State> = {
 		},
 		addFetchedImagesData (state, imagesParams: ImageParams) {
 			state.fetchedImagesData = state.fetchedImagesData.concat(imagesParams)
+		},
+		clearFetchedImagesData (state) {
+			state.fetchedImagesData = []
+		}
+	},
+	actions: {
+		destroy ({ commit }) {
+			commit('setMap', null)
+			commit('clearFetchedImagesData')
 		}
 	},
 	getters: {

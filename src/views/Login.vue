@@ -29,7 +29,6 @@ export default defineComponent({
 		async createSession () {
 			const { jwt } = (await login(this.userName, this.password)).data
 			setItem('jwt', jwt)
-			await this.initialize()
 			this.$router.push({ name: 'map' })
 		}
 	}

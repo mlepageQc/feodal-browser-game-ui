@@ -1,6 +1,6 @@
 <template>
   <header>
-    <button v-if="currentUser" @click="logout">Log out</button>
+    <button v-if="currentUser" @click="onLogout">Log out</button>
   </header>
 </template>
 
@@ -16,11 +16,11 @@ export default defineComponent({
     ])
   },
   methods: {
-    ...mapActions('session', [
-      'destroy'
+    ...mapActions([
+      'logout'
     ]),
-    async logout (): Promise<void> {
-      await this.destroy()
+    async onLogout (): Promise<void> {
+      await this.logout()
       removeItem('jwt')
       this.$router.push({ name: 'login' })
     }

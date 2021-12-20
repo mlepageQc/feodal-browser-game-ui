@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory, START_LOCATION } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Characters from '@/views/Characters.vue'
 import Login from '@/views/Login.vue'
 import Signup from '@/views/Signup.vue'
@@ -63,10 +63,10 @@ const router = createRouter({
 	]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
 	if (getItem('jwt')) {
-		if (from === START_LOCATION) {
-			store.dispatch('initialize')
+		if (!store.state.initialized) {
+			await store.dispatch('initialize')
 		}
 		if (to.name === RouteNames.Login) {
 			next({ name: RouteNames.Map })
