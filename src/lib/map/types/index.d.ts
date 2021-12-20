@@ -26,4 +26,6 @@ export enum ZoomLevel {
 	ZoomLevel3 = 3
 }
 
-export type MapImageParams = CoordinatesSet & { data: string }
+export type ImageData = CoordinatesSet & { data: string }
+
+export type ImageParams = CoordinatesSet & { zoomLevel: ZoomLevel }
