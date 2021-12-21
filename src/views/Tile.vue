@@ -92,8 +92,6 @@ export default defineComponent({
         await createUserBuilding(this.x, this.y, building.id)
       ).data
 
-      console.log(userBuilding)
-
       this.map.drawImageFromUrl(
         this.x * TILE_SIZE, 
         this.y * TILE_SIZE, 

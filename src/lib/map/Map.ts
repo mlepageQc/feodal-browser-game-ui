@@ -175,7 +175,6 @@ export default class Map {
 				this.canvasContext.drawImage(image, x, y)
 				resolve()
 			}
-			console.log(url)
 			image.src = url
 		})
 	}
