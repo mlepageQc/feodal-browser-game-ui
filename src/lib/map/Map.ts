@@ -168,6 +168,17 @@ export default class Map {
 		})
 	}
 
+	drawImageFromUrl (x: number, y: number, url: string): Promise<void> {
+		return new Promise((resolve, _reject) => {
+			const image = new window.Image()
+			image.onload = () => {
+				this.canvasContext.drawImage(image, x, y)
+				resolve()
+			}
+			image.src = url
+		})
+	}
+
 	stopDrag = (): void => {
 		this.isDragging = false
 		this.addPlaygroundTransition()
