@@ -1,11 +1,15 @@
 import axios from 'axios'
 import router from '@/router'
 import { getItem, removeItem } from '@/lib/local-storage'
+import Qs from 'qs'
 
 const instance = axios.create({
 	baseURL: process.env.VUE_APP_API_URL,
   headers: {
     'Content-Type': 'application/json'
+  },
+  paramsSerializer: (params) => {
+    return Qs.stringify(params, { arrayFormat: 'brackets' })
   }
 })
 

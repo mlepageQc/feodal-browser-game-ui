@@ -10,15 +10,6 @@ export interface MapSelectionChangeParams {
 	marginTop: number
 }
 
-export interface MinimapSelectorChangeParams {
-	overflowRight: boolean
-	overflowBottom: boolean
-	newSelectorX: number
-	newSelectorY: number
-}
-
-export type MinimapSelectionChange = (params: MinimapSelectorChangeParams) => any
-
 export enum ZoomLevel {
 	ZoomLevel0 = 0,
 	ZoomLevel1 = 1,
@@ -26,6 +17,8 @@ export enum ZoomLevel {
 	ZoomLevel3 = 3
 }
 
-export type ImageData = CoordinatesSet & { data: string }
+export type ImageDataUrl = CoordinatesSet & { url: string }
+
+export type ImageDataBase64String = CoordinatesSet & { data: string }
 
 export type ImageParams = CoordinatesSet & { zoomLevel: ZoomLevel }

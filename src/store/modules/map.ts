@@ -24,7 +24,7 @@ const map: Module<MapState, State> = {
 		map: null,
 		mapMarginLeft: 0,
 		mapMarginTop: 0,
-		zoomLevel: 0,
+		zoomLevel: 1,
 		fetchedImagesData: [] // Caching fetched images, mechanism to clear cache will come eventually
 	},
 	mutations: {
@@ -53,7 +53,7 @@ const map: Module<MapState, State> = {
 	},
 	getters: {
 		mapSize (state): number {
-			return (state.zoomLevel + 1) * MAP_SIZE
+			return state.zoomLevel * MAP_SIZE
 		}
 	}
 }

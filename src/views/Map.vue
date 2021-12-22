@@ -8,16 +8,15 @@
 </template>
 
 <script lang="ts">
-import { CoordinatesSet, ImageData, ImageParams } from '@/lib/map/types'
+import { CoordinatesSet, ImageParams } from '@/lib/map/types'
 import { defineComponent } from 'vue'
 import { debounce } from 'lodash'
-import { fetchMapBase64Image } from '@/api/MapApi'
+import { fetchMapImages } from '@/api/MapApi'
 import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
 import RouteNames from '@/config/RouteNames'
 import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
-import { AxiosResponse } from 'axios'
 import { MAP_IMAGE_SIZE, TILE_SIZE } from '@/config/Map'
 
 export default defineComponent({
@@ -68,14 +67,14 @@ export default defineComponent({
       )
       this.setMap(map)
       window.addEventListener('resize', this.reCenterDebounce)
-      this.map.drawImages(await this.updateMapImages())
+      await this.updateMapImages()
       this.map.mount()
       this.map.translateMap(this.mapMarginLeft, this.mapMarginTop) // Moving to cached coordinates
     },
     // eslint-disable-next-line no-unused-vars
     reCenterDebounce: debounce(async function(this: any, _e: any) { 
       this.map.reCenter()
-      this.map.drawImages(await this.updateMapImages())
+      this.updateMapImages()
     }, 200),
     onMapSelectionChange ({ x, y }: CoordinatesSet): void {
       this.$router.push({ 
@@ -86,20 +85,22 @@ export default defineComponent({
         } 
       })
     },
-    async onMapDragged (marginLeft: number, marginTop: number): Promise<void> {
+    onMapDragged (marginLeft: number, marginTop: number): void {
       setItem(MAP_MARGINS_ITEM, JSON.stringify({ marginLeft, marginTop }))
       this.setMapMargins({ marginLeft, marginTop })
-      this.map.drawImages(await this.updateMapImages())
+      this.updateMapImages()
     },
     // Retrieves needed images parameters, fetches the images, adds them to store caching and returns them
-    async updateMapImages (): Promise<ImageData[]> {
+    async updateMapImages (): Promise<void> {
       const imagesParams = this.buildImagesFetchingParams()
-      const imagesResponse = await Promise.all<AxiosResponse<ImageData>>(
-        imagesParams.map((params: ImageParams) => fetchMapBase64Image(params))
-      )
-      const imagesData = imagesResponse.map(response => response.data)
+      // Aborting if no images to fetch
+      if (imagesParams.length === 0) return
+
+      const imagesData = (
+        await fetchMapImages(imagesParams)
+      ).data
       this.addFetchedImagesData(imagesData)
-      return imagesData
+      this.map.drawImagesFromBase64Strings(imagesData)
     },
     buildImagesFetchingParams (): ImageParams[] {
       const imageParams = []
@@ -143,7 +144,6 @@ export default defineComponent({
 
 <style lang="scss">
   @import '../lib/map/style/map.scss';
-  @import '../lib/map/style/minimap.scss';
 
   .app-map {
     display: flex;

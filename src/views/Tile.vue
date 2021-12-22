@@ -6,6 +6,7 @@
       class="tile--nav">
       {{ x }}, {{ y }}
       <router-link :to="{ name: 'map' }">Close</router-link>
+      <button @click="setMapSelectedTile">Center on</button>
     </div>
     <ul class="tile--buildings-list">
       <li
@@ -92,11 +93,11 @@ export default defineComponent({
         await createUserBuilding(this.x, this.y, building.id)
       ).data
 
-      this.map.drawImageFromUrl(
-        this.x * TILE_SIZE, 
-        this.y * TILE_SIZE, 
-        userBuilding.buildingUrl
-      )
+      this.map.drawImageFromUrl({
+        x: this.x * TILE_SIZE,
+        y: this.y * TILE_SIZE,
+        url: userBuilding.buildingUrl
+      })
     }
   }
 })

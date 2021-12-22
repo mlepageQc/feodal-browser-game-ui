@@ -1,4 +1,4 @@
-import { CoordinatesSet, ImageData } from './types'
+import { CoordinatesSet, ImageDataUrl, ImageDataBase64String } from './types'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import { debounce } from 'lodash'
 
@@ -151,13 +151,30 @@ export default class Map {
 		document.addEventListener('mouseleave', this.stopDrag)
 	}
 
-	drawImages (imagesData: ImageData[]): Promise<void[]> {
+	drawImagesFromUrls (imagesData: ImageDataUrl[]): Promise<void[]> {
 		return Promise.all(
-			imagesData.map(params => this.drawImage(params))
+			imagesData.map(data => this.drawImageFromUrl(data))
 		)
 	}
 
-	drawImage (imageData: ImageData): Promise<void> {
+	drawImagesFromBase64Strings (imagesData: ImageDataBase64String[]): Promise<void[]> {
+		return Promise.all(
+			imagesData.map(data => this.drawImageFromBase64String(data))
+		)
+	}
+
+	drawImageFromUrl (imageData: ImageDataUrl): Promise<void> {
+		return new Promise((resolve, _reject) => {
+			const image = new window.Image()
+			image.onload = () => {
+				this.canvasContext.drawImage(image, imageData.x, imageData.y)
+				resolve()
+			}
+			image.src = imageData.url
+		})
+	}
+
+	drawImageFromBase64String (imageData: ImageDataBase64String): Promise<void> {
 		return new Promise((resolve, _reject) => {
 			const image = new window.Image()
 			image.onload = () => {
@@ -165,17 +182,6 @@ export default class Map {
 				resolve()
 			}
 			image.src = `data:image/png;base64,${imageData.data}`
-		})
-	}
-
-	drawImageFromUrl (x: number, y: number, url: string): Promise<void> {
-		return new Promise((resolve, _reject) => {
-			const image = new window.Image()
-			image.onload = () => {
-				this.canvasContext.drawImage(image, x, y)
-				resolve()
-			}
-			image.src = url
 		})
 	}
 
