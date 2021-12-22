@@ -1,39 +1,57 @@
 <template>
   <div class="tile">
     <Spinner v-if="status === 'fetching'" />
-    <div
-      v-else 
-      class="tile--nav">
-      {{ x }}, {{ y }}
-      <router-link :to="{ name: 'map' }">Close</router-link>
-      <button @click="setMapSelectedTile">Center on</button>
-    </div>
-    <ul class="tile--buildings-list">
-      <li
-        v-for="building in buildings"
-        :key="building.id"
-        class="tile--buildings-list-item">
-        <img :src="building.url" />
-        {{ building.name }}
-        <div class="tile--buildings-list-item-actions">
-          <button @click="build(building)">Build</button>
+    <template v-else>
+      <div
+        class="tile--nav">
+        {{ x }}, {{ y }}
+        <div class="tile--nav-actions">
+          <router-link :to="{ name: 'map' }">Close</router-link>
+          <button @click="setMapSelectedTile">Center on</button>
+        </div>    
+      </div>
+      <div
+        v-if="userBuilding"
+        class="tile--user-building">
+        <img :src="userBuilding.buildingUrl" />
+        {{ userBuilding.buildingName }}
+        <div class="tile--user-building-actions">
+          <button @click="destroy(building)">Destroy</button>
         </div>
-      </li>  
-    </ul>
+      </div>
+      <ul class="tile--buildings-list">
+        <li
+          v-for="building in buildings"
+          :key="building.id"
+          class="tile--buildings-list-item">
+          <img :src="building.url" />
+          {{ building.name }}
+          <div class="tile--buildings-list-item-actions">
+            <button
+              :disabled="userBuilding"
+              @click="build(building)">
+              Build
+            </button>
+          </div>
+        </li>  
+      </ul>
+    </template>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapState } from 'vuex'
-import { fetchBuildings, createUserBuilding } from '@/api/BuildingApi'
+import { fetchBuildings, createUserBuilding, fetchUserBuilding } from '@/api/BuildingApi'
 import Building from '@/types/Building'
+import UserBuilding from '@/types/UserBuilding'
 import FetchingStatuses from '@/config/FetchingStatuses'
 import { TILE_SIZE } from '@/lib/map/config'
 import Spinner from '@/components/ui/Spinner.vue'
 
 interface TileData {
   status: FetchingStatuses
+  userBuilding: UserBuilding | null,
   buildings: Building[]
 }
 
@@ -50,6 +68,7 @@ export default defineComponent({
   data (): TileData {
     return {
       status: FetchingStatuses.Fetching,
+      userBuilding: null,
       buildings: []
     }
   },
@@ -72,13 +91,20 @@ export default defineComponent({
   },
   watch: {
     'coordinates' () {
+      this.setup()
       this.setMapSelectedTile()
     }
   },
   methods: {
     async setup (): Promise<void> {
+      console.log('wtf')
       try {
-        this.buildings = (await fetchBuildings()).data
+        this.userBuilding = (
+          await fetchUserBuilding(this.x, this.y)
+        ).data
+        this.buildings = (
+          await fetchBuildings()
+        ).data
         this.status = FetchingStatuses.Idle
       } catch (e) {
         this.status = FetchingStatuses.Failed
@@ -98,6 +124,11 @@ export default defineComponent({
         y: this.y * TILE_SIZE,
         url: userBuilding.buildingUrl
       })
+
+      this.userBuilding = userBuilding
+    },
+    destroy (): void {
+      return undefined
     }
   }
 })
@@ -115,6 +146,26 @@ export default defineComponent({
       padding: 0 16px;
       height: 56px;
       border-bottom: 1px solid black;
+      &-actions {
+        display: flex;
+        margin-left: auto;
+
+        > :first-child {
+          margin-right: 8px;
+        }
+      }
+    }
+    &--user-building {
+      padding: 12px;
+      border-bottom: 1px solid black;
+      display: flex;
+      align-items: center;
+      img {
+        margin-right: 8px;
+      }
+      &-actions {
+        margin-left: auto;
+      }
     }
     &--buildings-list {
       padding: 12px 0;
