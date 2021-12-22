@@ -4,7 +4,6 @@ import UserBuilding from '@/types/UserBuilding'
 import { AxiosResponse } from 'axios'
 
 export function fetchBuildings (): Promise<AxiosResponse<Building[]>> {
-	console.log('yooo')
 	return axios.get('/buildings')
 }
 

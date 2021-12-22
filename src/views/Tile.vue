@@ -16,7 +16,7 @@
         <img :src="userBuilding.buildingUrl" />
         {{ userBuilding.buildingName }}
         <div class="tile--user-building-actions">
-          <button @click="destroy(building)">Destroy</button>
+          <button @click="destroy(userBuilding)">Destroy</button>
         </div>
       </div>
       <ul class="tile--buildings-list">
@@ -97,7 +97,6 @@ export default defineComponent({
   },
   methods: {
     async setup (): Promise<void> {
-      console.log('wtf')
       try {
         this.userBuilding = (
           await fetchUserBuilding(this.x, this.y)
@@ -127,8 +126,8 @@ export default defineComponent({
 
       this.userBuilding = userBuilding
     },
-    destroy (): void {
-      return undefined
+    destroy (userBuilding: UserBuilding): void {
+      alert(userBuilding.id)
     }
   }
 })
