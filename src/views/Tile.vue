@@ -16,7 +16,7 @@
         <img :src="userBuilding.buildingUrl" />
         {{ userBuilding.buildingName }}
         <div class="tile--user-building-actions">
-          <button @click="destroy(userBuilding)">Destroy</button>
+          <button @click="destroy">Destroy</button>
         </div>
       </div>
       <ul class="tile--buildings-list">
@@ -42,7 +42,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import { mapState } from 'vuex'
-import { fetchBuildings, createUserBuilding, fetchUserBuilding } from '@/api/BuildingApi'
+import { fetchBuildings, createUserBuilding, fetchUserBuilding, destroyUserBuilding } from '@/api/BuildingApi'
 import Building from '@/types/Building'
 import UserBuilding from '@/types/UserBuilding'
 import FetchingStatuses from '@/config/FetchingStatuses'
@@ -126,8 +126,15 @@ export default defineComponent({
 
       this.userBuilding = userBuilding
     },
-    destroy (userBuilding: UserBuilding): void {
-      alert(userBuilding.id)
+    async destroy (): Promise<void> {
+      const restoredTileImaged = (await destroyUserBuilding(this.userBuilding!.id)).data
+      this.userBuilding = null
+      
+      this.map.drawImageFromBase64String({
+        x: restoredTileImaged.x * TILE_SIZE,
+        y: restoredTileImaged.y * TILE_SIZE,
+        data : restoredTileImaged.data
+      })
     }
   }
 })
