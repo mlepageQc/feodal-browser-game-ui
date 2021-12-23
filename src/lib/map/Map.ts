@@ -190,7 +190,8 @@ export default class Map {
 		this.addPlaygroundTransition()
 	}
 
-	setSelectedTile (marginLeft: number, marginTop: number): void {		
+	setSelectedTile (marginLeft: number, marginTop: number): void {
+		this.selectedTile.style.display = 'block'		
 		this.selectedTile.style.left = `${marginLeft}px`
 		this.selectedTile.style.top = `${marginTop}px`
 
@@ -199,6 +200,10 @@ export default class Map {
 			-marginTop + this.containerHeight / 2 - this.tileSize / 2
 		)
 		this.adjustMapHeightToContainer()
+	}
+
+	hideSelectedTile (): void {
+		this.selectedTile.style.display = 'none'
 	}
 
 	adjustMapHeightToContainer (): void {
@@ -264,6 +269,7 @@ export default class Map {
 		this.selectedTile.className = 'map--selected-tile'
 		this.selectedTile.style.width = `${this.tileSize}px`
 		this.selectedTile.style.height = `${this.tileSize}px`
+		this.selectedTile.style.display = 'none'
 		this.playground.appendChild(this.selectedTile)
 	}
 

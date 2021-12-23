@@ -83,6 +83,10 @@ export default defineComponent({
       return this.coordinates.y
     }
   },
+  beforeRouteLeave (_to, _from, next) {
+    this.map!.hideSelectedTile()
+    next()
+  },
   created () {
     this.setup()
   },
