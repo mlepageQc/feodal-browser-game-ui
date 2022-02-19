@@ -4,11 +4,9 @@ const proxy = HttpProxy.createProxyServer({
 	target: 'http://app.local:3000'
 })
 
-const PORT = 8000
+const WEB_PORT = 8000
 
-proxy.listen(PORT)
-
-console.log('Proxy listening to port ' + PORT);
+proxy.listen(WEB_PORT)
 
 const enableCors = (req, res) => {
 	if (req.headers['access-control-request-method']) {
@@ -26,4 +24,21 @@ const enableCors = (req, res) => {
 proxy.on('proxyRes', (_proxyRes, req, res) => {
 	enableCors(req, res)
 })
+
+console.log('Proxy web socket server listening to port ' + WEB_PORT);
+
+var proxyWs = HttpProxy.createServer({
+	target: 'ws://app.local:3000',
+	ws: true
+})
+
+const WEB_SOCKET_PORT = 8014
+
+proxyWs.listen(WEB_SOCKET_PORT)
+
+proxyWs.on('proxyRes', (_proxyRes, req, res) => {
+	enableCors(req, res)
+})
+
+console.log('Proxy web socket server listening to port ' + WEB_SOCKET_PORT);
 

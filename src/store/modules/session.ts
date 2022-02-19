@@ -3,18 +3,23 @@ import { State } from '@/store'
 import User from '@/types/User'
 import { fetchCurrentUser } from '@/api/UserApi'
 
-interface SessionState {
-	currentUser: null | User
+export interface SessionState {
+	currentUser: null | User,
+	actionCableSocket: null | WebSocket
 }
 
 const session: Module<SessionState, State> = {
 	namespaced: true, 
 	state: {
-		currentUser: null
+		currentUser: null,
+		actionCableSocket: null
 	},
 	mutations: {
 		setCurrentUser (state, currentUser): void {
 			state.currentUser = currentUser
+		},
+		setActionCableSocket (state, actionCableSocket) {
+			state.actionCableSocket = actionCableSocket
 		}
 	},
 	actions: {
