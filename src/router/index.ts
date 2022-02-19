@@ -10,6 +10,7 @@ import Spinner from '@/components/ui/Spinner.vue'
 import { getItem } from '@/lib/local-storage'
 import RouteNames from '@/config/RouteNames'
 import store from '@/store'
+import { SessionState } from '@/store/modules/session'
 
 const BASE_LAYOUT = {
 	spinner: Spinner,
@@ -64,10 +65,19 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, _from, next) => {
-	if (getItem('jwt')) {
+	const jwt = getItem('jwt')
+	if (jwt) {
 		if (!store.state.initialized) {
 			await store.dispatch('initialize')
 		}
+
+		if (!((store.state as any).session as SessionState).actionCableSocket) {
+			store.commit(
+				'session/setActionCableSocket',
+				new WebSocket(`${process.env.VUE_APP_ACTION_CABLE_URL}/cable?token=${jwt}`)
+			)
+		}
+
 		if (to.name === RouteNames.Login) {
 			next({ name: RouteNames.Map })
 		} else {
