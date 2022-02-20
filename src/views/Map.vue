@@ -22,7 +22,8 @@ import { MAP_IMAGE_SIZE, TILE_SIZE } from '@/config/Map'
 export default defineComponent({
   computed: { 
     ...mapState('session', [
-      'currentUser'
+      'currentUser',
+      'actionCableSocket'
     ]),
     ...mapState('map', [
       'map',
@@ -43,6 +44,15 @@ export default defineComponent({
   },
   mounted (): void {
     this.initializeMap()   
+
+    /* const command = {
+      command: 'subscribe',
+      identifier: {
+        channel: 'MapChannel'
+      }
+    }
+
+    this.actionCableSocket.send(JSON.stringify(command)) */
   },
   beforeUnmount () {
     window.removeEventListener('resize', this.reCenterDebounce)

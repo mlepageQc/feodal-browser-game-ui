@@ -28,7 +28,7 @@ proxy.on('proxyRes', (_proxyRes, req, res) => {
 console.log('Proxy web socket server listening to port ' + WEB_PORT);
 
 var proxyWs = HttpProxy.createServer({
-	target: 'wss://app.local:3000',
+	target: 'ws://app.local:3000',
 	ws: true
 })
 
