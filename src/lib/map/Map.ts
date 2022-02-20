@@ -1,6 +1,7 @@
-import { CoordinatesSet, ImageDataUrl, ImageDataBase64String } from './types'
+import { CoordinatesSet, ImageDataUrl, ImageDataBase64String, ZoomLevel } from './types'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import { debounce } from 'lodash'
+import { ORDERED_ZOOM_LEVELS } from './config'
 
 export default class Map {
 	private readonly _map: HTMLDivElement = document.createElement('div')
@@ -20,7 +21,8 @@ export default class Map {
 		private readonly _onTileSelected: (coordinates: CoordinatesSet) => any,
 		_onMapDragged: (marginLeft: number, marginTop: number) => any,
 		private readonly _mapSize: number,
-		private readonly _tileSize: number
+		private readonly _tileSize: number,
+		private _zoomLevel: ZoomLevel
 	) {
 		this._onMapDragged = debounce(() => {
 			_onMapDragged(
@@ -74,6 +76,10 @@ export default class Map {
 		return this._tileSize
 	}
 
+	private get zoomLevel (): ZoomLevel {
+		return this._zoomLevel
+	}
+
 	private get hoveredTile (): HTMLDivElement {
 		return this._hoveredTile
 	}
@@ -110,6 +116,10 @@ export default class Map {
 		return this.initialClientY - this.initialMarginTop
 	}
 
+	private get isMaxZoomLevel (): boolean {
+		return this.zoomLevel === ORDERED_ZOOM_LEVELS[ORDERED_ZOOM_LEVELS.length - 1]
+	}
+
 	private set isDragging (value: boolean) {
 		this._isDragging = value
 	}
@@ -128,6 +138,10 @@ export default class Map {
 
 	private set initialMarginTop (value: number) {
 		this._initialMarginTop = value
+	}
+
+	private set zoomLevel (value: ZoomLevel) {
+		this._zoomLevel = value
 	}
 
 	async mount (): Promise<void> {
@@ -218,21 +232,16 @@ export default class Map {
 	}
 
 	private dragMap (marginLeft: number, marginTop: number): void {
-		let overflowRight = false
-		let overflowBottom = false
-
 		if (marginLeft > 0) {
 			marginLeft = 0
 		} else if (marginLeft < (this.containerWidth - this.playgroundAttribute('width'))) {
 			marginLeft = this.containerWidth - this.playgroundAttribute('width')
-			overflowRight = true
 		}
 
 		if (marginTop > 0) {
 			marginTop = 0
 		} else if (marginTop < (this.containerHeight - this.playgroundAttribute('height'))) {
 			marginTop = this.containerHeight - this.playgroundAttribute('height')
-			overflowBottom = true
 		}
 
 		this.translateMap(marginLeft, marginTop)
@@ -300,7 +309,7 @@ export default class Map {
 	}
 
 	private onMouseMove = (event: MouseEvent): boolean | void => {
-		this.hoverTile(event)
+		if (this.isMaxZoomLevel) this.hoverTile(event)
 		if (!this.isDragging) return false
 
 		this.dragMap(
@@ -315,7 +324,7 @@ export default class Map {
 		// This is to prevent unconsistent selection behavior
 		const movedX = Math.abs(this.dragStartX - (event.clientX - this.initialMarginLeft)) <= 3
 		const movedY = Math.abs(this.dragStartY - (event.clientY - this.initialMarginTop)) <= 3		
-		if (movedX || movedY) this.selectTile(event)
+		if ((movedX || movedY) && this.isMaxZoomLevel) this.selectTile(event)
 	}
 
 	private onMouseOut = (): void => {
@@ -348,5 +357,33 @@ export default class Map {
 	private translateMap (marginLeft: number, marginTop: number) {
 		this.playground.style.marginLeft = `${marginLeft}px`
 		this.playground.style.marginTop = `${marginTop}px`
+	}
+
+	public zoomIn (): void {
+		if (this.isMaxZoomLevel) return
+
+		const canvasCopy = this.getCanvasCopy()
+		this.canvasContext.scale(this.zoomLevel * 2, this.zoomLevel * 2)
+		this.canvasContext.clearRect(0, 0, this.mapSize, this.mapSize)
+		this.canvasContext.drawImage(canvasCopy, 0, 0)
+	}
+
+	public zoomOut (): void {
+		const canvasCopy = this.getCanvasCopy()
+		this.canvasContext.scale(this.zoomLevel / 2, this.zoomLevel / 2)
+		this.canvasContext.clearRect(0, 0, this.mapSize, this.mapSize)
+		this.canvasContext.drawImage(canvasCopy, 0, 0)
+	}
+
+	private getCanvasCopy (): HTMLCanvasElement {
+    const canvasCopy = document.createElement('canvas')
+    const canvasCopyContext = canvasCopy.getContext('2d')
+
+    canvasCopy.width = this.canvas.width;
+    canvasCopy.height = this.canvas.height;
+
+    canvasCopyContext!.drawImage(this.canvas, 0, 0);
+
+    return canvasCopy
 	}
 }

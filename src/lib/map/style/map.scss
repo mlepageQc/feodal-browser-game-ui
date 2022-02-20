@@ -2,11 +2,6 @@
 	&:hover {
 		cursor: pointer;
 	}
-	&--container {
-		overflow: hidden;
-		flex: 6;
-		position: relative;
-	}
 	&--playground {
 		position: relative;
 		&_with-transition {

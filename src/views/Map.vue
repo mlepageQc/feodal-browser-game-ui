@@ -1,8 +1,13 @@
 <template>
   <div class="app-map">
     <div
-      class="map--container"
-      ref="mapContainer" />
+      class="app-map--container"
+      ref="mapContainer">
+      <div class="app-map--zoom">
+        <button @click="map.zoomIn">+</button>
+        <button @click="map.zoomOut">-</button>
+      </div>
+    </div>
     <router-view v-if="map" class="map--tile" />
   </div>
 </template>
@@ -16,6 +21,7 @@ import { mapActions, mapState, mapMutations, mapGetters } from 'vuex'
 import { setItem } from '@/lib/local-storage'
 import Map from '@/lib/map/Map'
 import RouteNames from '@/config/RouteNames'
+//import { MapChannelSubscriptionEvent } from '@/config/ChannelSubscriptionEvents'
 import { MAP_MARGINS_ITEM } from '@/config/LocalStorageConfig'
 import { MAP_IMAGE_SIZE, TILE_SIZE } from '@/config/Map'
 
@@ -43,16 +49,8 @@ export default defineComponent({
     next()
   },
   mounted (): void {
-    this.initializeMap()   
-
-    /* const command = {
-      command: 'subscribe',
-      identifier: {
-        channel: 'MapChannel'
-      }
-    }
-
-    this.actionCableSocket.send(JSON.stringify(command)) */
+    this.initializeMap()
+    //this.actionCableSocket.send(MapChannelSubscriptionEvent)
   },
   beforeUnmount () {
     window.removeEventListener('resize', this.reCenterDebounce)
@@ -73,7 +71,8 @@ export default defineComponent({
         this.onMapSelectionChange,  
         this.onMapDragged,
         this.mapSize,
-        TILE_SIZE
+        TILE_SIZE,
+        this.zoomLevel
       )
       this.setMap(map)
       window.addEventListener('resize', this.reCenterDebounce)
@@ -159,5 +158,25 @@ export default defineComponent({
     display: flex;
     flex-grow: 1;
     min-width: 0;
+
+    &--container {
+      overflow: hidden;
+      flex: 6;
+      position: relative;
+    }
+    &--zoom {
+      position: absolute;
+      right: 24px;
+      top: 24px;
+      display: flex;
+      z-index: 1;
+
+      button {
+        width: 24px;
+        &:first-child {
+          margin-right: 8px
+        }
+      }
+    }
   }
 </style>

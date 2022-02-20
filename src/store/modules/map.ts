@@ -29,8 +29,8 @@ const map: Module<MapState, State> = {
 	},
 	mutations: {
 		setMapMargins (state, { marginLeft, marginTop }: MapMargins): void {
-      state.mapMarginLeft = parseInt(marginLeft.toString())
-      state.mapMarginTop = parseInt(marginTop.toString())
+      state.mapMarginLeft = parseInt((marginLeft || 0).toString())
+      state.mapMarginTop = parseInt((marginTop || 0).toString())
     },
     setMap (state, map): void {
       state.map = map

@@ -10,12 +10,7 @@ export interface MapSelectionChangeParams {
 	marginTop: number
 }
 
-export enum ZoomLevel {
-	ZoomLevel0 = 0,
-	ZoomLevel1 = 1,
-	ZoomLevel2 = 2,
-	ZoomLevel3 = 3
-}
+export type ZoomLevel = 1 | 2 | 4
 
 export type ImageDataUrl = CoordinatesSet & { url: string }
 
