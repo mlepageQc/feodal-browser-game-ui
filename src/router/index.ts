@@ -72,10 +72,24 @@ router.beforeEach(async (to, _from, next) => {
 		}
 
 		if (!((store.state as any).session as SessionState).actionCableSocket) {
-			store.commit(
-				'session/setActionCableSocket',
-				new WebSocket(`${process.env.VUE_APP_ACTION_CABLE_URL}/cable?token=${jwt}`)
-			)
+
+			const socket = new WebSocket(`${process.env.VUE_APP_ACTION_CABLE_URL}/cable?token=${jwt}`)
+
+			socket.onopen = () => {
+				console.log('socket opened')
+
+				const command = {
+					'command': 'subscribe',
+					'identifier': JSON.stringify({ 'channel': 'MapChannel' })
+				}
+				socket.send(JSON.stringify(command))
+			}
+
+			socket.onclose = () => {
+				console.log('socket closed')
+			}
+
+			store.commit('session/setActionCableSocket', socket)
 		}
 
 		if (to.name === RouteNames.Login) {
