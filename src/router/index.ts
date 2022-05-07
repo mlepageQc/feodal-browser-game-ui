@@ -71,12 +71,12 @@ router.beforeEach(async (to, _from, next) => {
 			await store.dispatch('initialize')
 		}
 
-		if (!((store.state as any).session as SessionState).actionCableSocket) {
-			store.commit(
-				'session/setActionCableSocket',
-				new WebSocket(`${process.env.VUE_APP_ACTION_CABLE_URL}/cable?token=${jwt}`)
-			)
-		}
+		// if (!((store.state as any).session as SessionState).actionCableSocket) {
+		// 	store.commit(
+		// 		'session/setActionCableSocket',
+		// 		new WebSocket(`${process.env.VUE_APP_ACTION_CABLE_URL}/cable?token=${jwt}`)
+		// 	)
+		// }
 
 		if (to.name === RouteNames.Login) {
 			next({ name: RouteNames.Map })

@@ -5,4 +5,5 @@ export default interface UserBuilding {
 	buildingId: number
 	buildingName: string
 	buildingUrl: string
+	userId: string
 }

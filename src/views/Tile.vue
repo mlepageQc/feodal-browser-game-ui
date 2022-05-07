@@ -15,11 +15,15 @@
         class="tile--user-building">
         <img :src="userBuilding.buildingUrl" />
         {{ userBuilding.buildingName }}
-        <div class="tile--user-building-actions">
+        <div
+          v-if="isCurrentUser(userBuilding.userId)"
+          class="tile--user-building-actions">
           <button @click="destroy">Destroy</button>
         </div>
       </div>
-      <ul class="tile--buildings-list">
+      <ul
+        v-if="isCurrentUser(userBuilding.userId)"
+        class="tile--buildings-list">
         <li
           v-for="building in buildings"
           :key="building.id"
@@ -41,7 +45,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { mapState } from 'vuex'
+import { mapState, mapGetters } from 'vuex'
 import { fetchBuildings, createUserBuilding, fetchUserBuilding, destroyUserBuilding } from '@/api/BuildingApi'
 import Building from '@/types/Building'
 import UserBuilding from '@/types/UserBuilding'
@@ -75,6 +79,9 @@ export default defineComponent({
   computed: {
     ...mapState('map', [
       'map'
+    ]),
+    ...mapGetters('session', [
+      'isCurrentUser'
     ]),
     x (): number {
       return this.coordinates.x

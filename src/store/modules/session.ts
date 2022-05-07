@@ -30,6 +30,11 @@ const session: Module<SessionState, State> = {
 		destroy ({ commit }): void {
 			commit('setCurrentUser', null)
 		}
+	},
+	getters: {
+		isCurrentUser: (state: SessionState) => (userId: string) => {
+			return state.currentUser!.id === userId
+		}
 	}
 }
 
