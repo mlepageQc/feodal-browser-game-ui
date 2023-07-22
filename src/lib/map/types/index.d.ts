@@ -10,7 +10,7 @@ export interface MapSelectionChangeParams {
 	marginTop: number
 }
 
-export type ZoomLevel = 1 | 2 | 4
+export type ZoomLevel = 4 | 2 | 1 | 0.5 | 0.25
 
 export type ImageDataUrl = CoordinatesSet & { url: string }
 

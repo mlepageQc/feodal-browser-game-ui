@@ -7,7 +7,7 @@
         {{ x }}, {{ y }}
         <div class="tile--nav-actions">
           <router-link :to="{ name: 'map' }">Close</router-link>
-          <button @click="setMapSelectedTile">Center on</button>
+          <button @click="setMapSelectedTile(true)">Center on</button>
         </div>    
       </div>
       <div
@@ -22,7 +22,7 @@
         </div>
       </div>
       <ul
-        v-if="isCurrentUser(userBuilding.userId)"
+        v-if="!userBuilding"
         class="tile--buildings-list">
         <li
           v-for="building in buildings"
@@ -32,7 +32,6 @@
           {{ building.name }}
           <div class="tile--buildings-list-item-actions">
             <button
-              :disabled="userBuilding"
               @click="build(building)">
               Build
             </button>
@@ -52,6 +51,7 @@ import UserBuilding from '@/types/UserBuilding'
 import FetchingStatuses from '@/config/FetchingStatuses'
 import { TILE_SIZE } from '@/lib/map/config'
 import Spinner from '@/components/ui/Spinner.vue'
+import { START_LOCATION } from 'vue-router'
 
 interface TileData {
   status: FetchingStatuses
@@ -98,12 +98,12 @@ export default defineComponent({
     this.setup()
   },
   mounted () {
-    this.setMapSelectedTile()
+    this.setMapSelectedTile(START_LOCATION !== this.$route)
   },
   watch: {
     'coordinates' () {
       this.setup()
-      this.setMapSelectedTile()
+      this.setMapSelectedTile(true)
     }
   },
   methods: {
@@ -121,8 +121,8 @@ export default defineComponent({
         console.log(e)
       }
     },
-    setMapSelectedTile () {
-      this.map!.setSelectedTile(this.x * TILE_SIZE, this.y * TILE_SIZE)     
+    setMapSelectedTile (moveTo = true) {
+      this.map!.setSelectedTile(this.x * TILE_SIZE, this.y * TILE_SIZE, moveTo)     
     },
     async build (building: Building): Promise<void> {
       const userBuilding = (

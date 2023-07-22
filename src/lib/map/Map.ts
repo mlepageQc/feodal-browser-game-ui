@@ -1,7 +1,7 @@
 import { CoordinatesSet, ImageDataUrl, ImageDataBase64String, ZoomLevel } from './types'
 import { getRoundedAttributeValueFromElement } from './helpers/DomHelper'
 import { debounce } from 'lodash'
-import { ORDERED_ZOOM_LEVELS } from './config'
+import { ORDERED_ZOOM_LEVELS, ZOOM_RATIO } from './config'
 
 export default class Map {
 	private readonly _map: HTMLDivElement = document.createElement('div')
@@ -13,8 +13,7 @@ export default class Map {
 	private _isDragging: boolean = false
 	private _initialClientX: number = 0
 	private _initialClientY: number = 0
-	private _initialMarginLeft: number = 0
-	private _initialMarginTop: number = 0
+	private _initialCanvas: HTMLCanvasElement | null = null
 
 	constructor(
 		private readonly _container: HTMLDivElement,
@@ -22,7 +21,9 @@ export default class Map {
 		_onMapDragged: (marginLeft: number, marginTop: number) => any,
 		private readonly _mapSize: number,
 		private readonly _tileSize: number,
-		private _zoomLevel: ZoomLevel
+		private _zoomLevel: ZoomLevel,
+		private _initialMarginLeft: number = 0,
+		private _initialMarginTop: number = 0
 	) {
 		this._onMapDragged = debounce(() => {
 			_onMapDragged(
@@ -117,7 +118,15 @@ export default class Map {
 	}
 
 	private get isMaxZoomLevel (): boolean {
-		return this.zoomLevel === ORDERED_ZOOM_LEVELS[ORDERED_ZOOM_LEVELS.length - 1]
+		return this.zoomLevel >= ORDERED_ZOOM_LEVELS[0]
+	}
+
+	private get isMinZoomLevel (): boolean {
+		return this.zoomLevel <= ORDERED_ZOOM_LEVELS[ORDERED_ZOOM_LEVELS.length - 1]
+	}
+
+	private get initialCanvas (): HTMLCanvasElement | null {
+		return this._initialCanvas
 	}
 
 	private set isDragging (value: boolean) {
@@ -144,6 +153,10 @@ export default class Map {
 		this._zoomLevel = value
 	}
 
+	private set initialCanvas (canvas: HTMLCanvasElement | null) {
+		this._initialCanvas = canvas
+	}
+
 	async mount (): Promise<void> {
 		this.playground.appendChild(this.hoveredTile)
 		this.playground.appendChild(this.selectedTile)
@@ -161,6 +174,8 @@ export default class Map {
 		this.playground.style.height = this.mapSize + 'px'
 		this.canvas.width = this.mapSize
 		this.canvas.height = this.mapSize
+
+		this.translateMap(this.initialMarginLeft, this.initialMarginTop)
 
 		document.addEventListener('mouseleave', this.stopDrag)
 	}
@@ -199,20 +214,25 @@ export default class Map {
 		})
 	}
 
+	setInitialCanvasFromCanvas (): void {
+		this.initialCanvas = this.canvas
+	}
+
 	stopDrag = (): void => {
 		this.isDragging = false
 		this.addPlaygroundTransition()
 	}
 
-	setSelectedTile (marginLeft: number, marginTop: number): void {
+	setSelectedTile (marginLeft: number, marginTop: number, moveTo = true): void {
 		this.selectedTile.style.display = 'block'		
 		this.selectedTile.style.left = `${marginLeft}px`
 		this.selectedTile.style.top = `${marginTop}px`
-
-		this.dragMap(
-			-marginLeft + this.containerWidth / 2 - this.tileSize / 2, 
-			-marginTop + this.containerHeight / 2 - this.tileSize / 2
-		)
+		if (moveTo) {
+			this.dragMap(
+				-marginLeft + this.containerWidth / 2 - this.tileSize / 2, 
+				-marginTop + this.containerHeight / 2 - this.tileSize / 2
+			)
+		}
 		this.adjustMapHeightToContainer()
 	}
 
@@ -278,7 +298,6 @@ export default class Map {
 		this.selectedTile.className = 'map--selected-tile'
 		this.selectedTile.style.width = `${this.tileSize}px`
 		this.selectedTile.style.height = `${this.tileSize}px`
-		this.selectedTile.style.display = 'none'
 		this.playground.appendChild(this.selectedTile)
 	}
 
@@ -295,6 +314,9 @@ export default class Map {
 	}
 
 	private onMouseDown = (event: MouseEvent): void => {
+		// Do nothing on right click
+		if (event.button == 2) return
+
 		this.removePlaygroundTransition()
 		this.isDragging = true
 		this.initialClientX = event.clientX
@@ -309,7 +331,8 @@ export default class Map {
 	}
 
 	private onMouseMove = (event: MouseEvent): boolean | void => {
-		if (this.isMaxZoomLevel) this.hoverTile(event)
+		// if (this.isMaxZoomLevel) this.hoverTile(event)
+		this.hoverTile(event)
 		if (!this.isDragging) return false
 
 		this.dragMap(
@@ -324,7 +347,8 @@ export default class Map {
 		// This is to prevent unconsistent selection behavior
 		const movedX = Math.abs(this.dragStartX - (event.clientX - this.initialMarginLeft)) <= 3
 		const movedY = Math.abs(this.dragStartY - (event.clientY - this.initialMarginTop)) <= 3		
-		if ((movedX || movedY) && this.isMaxZoomLevel) this.selectTile(event)
+		// if ((movedX || movedY) && this.isMaxZoomLevel) this.selectTile(event)
+		if (movedX || movedY) this.selectTile(event)
 	}
 
 	private onMouseOut = (): void => {
@@ -362,28 +386,18 @@ export default class Map {
 	public zoomIn (): void {
 		if (this.isMaxZoomLevel) return
 
-		const canvasCopy = this.getCanvasCopy()
-		this.canvasContext.scale(this.zoomLevel * 2, this.zoomLevel * 2)
+		this.zoomLevel = ORDERED_ZOOM_LEVELS[ORDERED_ZOOM_LEVELS.indexOf(this.zoomLevel) - 1]
+		this.canvasContext.scale(1, 1)
 		this.canvasContext.clearRect(0, 0, this.mapSize, this.mapSize)
-		this.canvasContext.drawImage(canvasCopy, 0, 0)
+		this.canvasContext.drawImage(this.initialCanvas!, 0, 0)
 	}
 
 	public zoomOut (): void {
-		const canvasCopy = this.getCanvasCopy()
-		this.canvasContext.scale(this.zoomLevel / 2, this.zoomLevel / 2)
+		if (this.isMinZoomLevel) return
+
+		this.zoomLevel = ORDERED_ZOOM_LEVELS[ORDERED_ZOOM_LEVELS.indexOf(this.zoomLevel) + 1]
+		this.canvasContext.scale(this.zoomLevel, this.zoomLevel)
 		this.canvasContext.clearRect(0, 0, this.mapSize, this.mapSize)
-		this.canvasContext.drawImage(canvasCopy, 0, 0)
-	}
-
-	private getCanvasCopy (): HTMLCanvasElement {
-    const canvasCopy = document.createElement('canvas')
-    const canvasCopyContext = canvasCopy.getContext('2d')
-
-    canvasCopy.width = this.canvas.width;
-    canvasCopy.height = this.canvas.height;
-
-    canvasCopyContext!.drawImage(this.canvas, 0, 0);
-
-    return canvasCopy
+		this.canvasContext.drawImage(this.initialCanvas!, 0, 0)
 	}
 }

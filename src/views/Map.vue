@@ -4,8 +4,16 @@
       class="app-map--container"
       ref="mapContainer">
       <div class="app-map--zoom">
-        <button @click="map.zoomIn">+</button>
-        <button @click="map.zoomOut">-</button>
+        <button
+          v-if="displayZoomInButton" 
+          @click="map.zoomIn">
+          +
+        </button>
+        <button
+          v-if="displayZoomOutButton"  
+          @click="map.zoomOut">
+          -
+        </button>
       </div>
     </div>
     <router-view v-if="map" class="map--tile" />
@@ -40,7 +48,13 @@ export default defineComponent({
     ]),
     ...mapGetters('map', [
       'mapSize'
-    ])
+    ]),
+    displayZoomInButton (): boolean {
+      return !this.map?.isMaxZoomLevel
+    },
+    displayZoomOutButton (): boolean {
+      return !this.map?.isMinZoomLevel
+    }
   },
   beforeRouteUpdate (to, _from, next) {
     if (to.name === RouteNames.Map) {
@@ -72,13 +86,14 @@ export default defineComponent({
         this.onMapDragged,
         this.mapSize,
         TILE_SIZE,
-        this.zoomLevel
+        this.zoomLevel,
+        this.mapMarginLeft,
+        this.mapMarginTop
       )
       this.setMap(map)
       window.addEventListener('resize', this.reCenterDebounce)
       await this.updateMapImages()
       this.map.mount()
-      this.map.translateMap(this.mapMarginLeft, this.mapMarginTop) // Moving to cached coordinates
     },
     // eslint-disable-next-line no-unused-vars
     reCenterDebounce: debounce(async function(this: any, _e: any) { 
@@ -110,6 +125,7 @@ export default defineComponent({
       ).data
       this.addFetchedImagesData(imagesData)
       this.map.drawImagesFromBase64Strings(imagesData)
+      this.map.setInitialCanvasFromCanvas()
     },
     buildImagesFetchingParams (): ImageParams[] {
       const imageParams = []

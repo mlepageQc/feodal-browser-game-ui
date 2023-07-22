@@ -36,6 +36,7 @@ export default defineComponent({
     ]),
     setMapAttributesFromStorage (): void {
       const savedMapMargins = getItem(MAP_MARGINS_ITEM)
+      
       if (savedMapMargins) {
         this.setMapMargins(JSON.parse(savedMapMargins))
       }
